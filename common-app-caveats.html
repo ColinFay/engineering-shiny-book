@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 15 Common Application Caveats | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="15.1 Reactivity anti-patterns  15.1.1 Reactivity is awesome… until it is not Let’s face it, reactivity is awesome… until it is not. Reactivity is a common source of confusion for beginners, and a...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 15 Common Application Caveats | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="15.1 Reactivity anti-patterns  15.1.1 Reactivity is awesome… until it is not Let’s face it, reactivity is awesome… until it is not. Reactivity is a common source of confusion for beginners, and a...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 15 Common Application Caveats | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="15.1 Reactivity anti-patterns  15.1.1 Reactivity is awesome… until it is not Let’s face it, reactivity is awesome… until it is not. Reactivity is a common source of confusion for beginners, and a...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="active" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="common-app-caveats" class="section level1" number="15">
+<h1>
+<span class="header-section-number">15</span> Common Application Caveats<a class="anchor" aria-label="anchor" href="#common-app-caveats"><i class="fas fa-link"></i></a>
+</h1>
+<div id="reactivity-anti-patterns" class="section level2" number="15.1">
+<h2>
+<span class="header-section-number">15.1</span> Reactivity anti-patterns<a class="anchor" aria-label="anchor" href="#reactivity-anti-patterns"><i class="fas fa-link"></i></a>
+</h2>
+<div id="reactivity-is-awesome-until-it-is-not" class="section level3" number="15.1.1">
+<h3>
+<span class="header-section-number">15.1.1</span> Reactivity is awesome… until it is not<a class="anchor" aria-label="anchor" href="#reactivity-is-awesome-until-it-is-not"><i class="fas fa-link"></i></a>
+</h3>
+<p>Let’s face it, reactivity is awesome… until it is not.
+Reactivity is a common source of confusion for beginners, and a common source of bugs and bottlenecks, even for seasoned <a href="https://shiny.rstudio.com/">shiny</a> developers.
+Most of the time, issues come from the fact that <strong>there is too much reactivity</strong>, <em>i.e.</em> we build apps where too many things happen, and some things are updated way more often than they should be, and computations are performed when they should not be, and in the end we have a hard time understanding what is really happening inside our application.</p>
+<p>Of course, it is a nice feature to make everything react instantly to changes, but when building larger apps it is easy to create monsters, i.e. complicated, messy, reactive graphs where everything is updated too much and too often.
+Or worse, we generate endless reactive loops, aka “the reactive inferno” where A invalidates B which invalidates C which invalidates A which invalidates B which invalidates C, and so on.</p>
+<p>Let’s take a small example of a reactive inferno:</p>
+<div class="sourceCode" id="cb256"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org">lubridate</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Adding a first input which allow </span></span>
+<span>    <span class="co"># to select a specific date</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/dateInput.html">dateInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"date"</span>, </span>
+<span>      <span class="st">"choose a date"</span></span>
+<span>    <span class="op">)</span>, </span>
+<span>    <span class="co"># Adding a second input allowing </span></span>
+<span>    <span class="co"># to specify a year</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"year"</span>, </span>
+<span>      <span class="st">"Choose a year"</span>, </span>
+<span>      choices <span class="op">=</span> <span class="fl">2010</span><span class="op">:</span><span class="fl">2030</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co"># We want the year to be update whenever </span></span>
+<span>  <span class="co"># the dateInput is updated</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">date</span> , <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/updateSelectInput.html">updateSelectInput</a></span><span class="op">(</span></span>
+<span>      <span class="va">session</span>, </span>
+<span>      <span class="st">"year"</span>, </span>
+<span>      selected <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># We want the date to be update whenever </span></span>
+<span>  <span class="co"># the selectInput is updated</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">year</span> , <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/updateDateInput.html">updateDateInput</a></span><span class="op">(</span></span>
+<span>      <span class="va">session</span>, </span>
+<span>      <span class="st">"date"</span>, </span>
+<span>      value <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html">as_date</a></span><span class="op">(</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%s-01-01"</span>, <span class="va">input</span><span class="op">$</span><span class="va">year</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>Here, we want to handle something pretty common:</p>
+<ul>
+<li>The user can pick a <code>date</code> and the <code>year</code> input is updated.</li>
+<li>And the other way round: when the <code>year</code> input changes, the <code>date</code> is updated too.</li>
+</ul>
+<p>But if you try to run this in your console, it will end as a reactive inferno: date updates year that updates date that updates year, and so on.</p>
+<p>And the more you work on your app, the more complex it gets, and the more you will be likely to end up in a reactive inferno.
+In this section, we will deal with reactivity, how to have more control over it, and how to share data across modules without relying on passing along reactive objects.</p>
+<p>This application is in this state of infinite loop because it starts in a mutually inconsistent state: the <code><a href="https://rdrr.io/pkg/shiny/man/dateInput.html">dateInput()</a></code> year value is the current year, while the <code><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput()</a></code> value is <code>2010</code>.
+One way to solve this is to add some extra logic to the app by selecting the current year for <code><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput()</a></code>, and adding an <code>if</code> statement in the <code>observeEvent(input$year, {})</code>, as shown below.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;We want to thank Hadley for his help simplifying this solution &lt;a href="https://github.com/ThinkR-open/engineering-shiny-book/issues/276" class="uri"&gt;https://github.com/ThinkR-open/engineering-shiny-book/issues/276&lt;/a&gt;.&lt;/p&gt;'><sup>59</sup></a></p>
+<div class="sourceCode" id="cb257"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/fluidPage.html">fluidPage</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/dateInput.html">dateInput</a></span><span class="op">(</span></span>
+<span>    <span class="st">"date"</span>, </span>
+<span>    <span class="st">"choose a date"</span></span>
+<span>    <span class="op">)</span>, </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span></span>
+<span>    <span class="st">"year"</span>, </span>
+<span>    <span class="st">"Choose a year"</span>, </span>
+<span>    choices <span class="op">=</span> <span class="fl">2010</span><span class="op">:</span><span class="fl">2030</span>, </span>
+<span>    <span class="co"># Setting a state for the year</span></span>
+<span>    selected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>      <span class="st">"%Y"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">date</span>, <span class="op">{</span></span>
+<span>    <span class="va">year</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">date</span>, <span class="st">"%Y"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="st">"Changing year to "</span>, <span class="va">year</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/updateSelectInput.html">updateSelectInput</a></span><span class="op">(</span>inputId <span class="op">=</span> <span class="st">"year"</span>, selected <span class="op">=</span> <span class="va">year</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">year</span>, <span class="op">{</span></span>
+<span>    <span class="co"># Preventing this update to be sent at application launch</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">year</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">date</span>, <span class="st">"%Y"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ISOdatetime.html">ISOdate</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">year</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/message.html">message</a></span><span class="op">(</span><span class="st">"Changing date to "</span>, <span class="va">date</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/updateDateInput.html">updateDateInput</a></span><span class="op">(</span>inputId <span class="op">=</span> <span class="st">"date"</span>, value <span class="op">=</span> <span class="va">date</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="observe-vs-observeevent" class="section level3" number="15.1.2">
+<h3>
+<span class="header-section-number">15.1.2</span> <code>observe</code> vs <code>observeEvent</code><a class="anchor" aria-label="anchor" href="#observe-vs-observeevent"><i class="fas fa-link"></i></a>
+</h3>
+<p>One of the most common features of reactive inferno is the use of <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> in cases where you should use <code>observeEvent</code>.
+Spoiler: you should try to use <code><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent()</a></code> as much as possible, and avoid <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code>as much as possible.</p>
+<p>At first, <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> seems easier to implement, and feels like a shortcut as you do not have to think about what to react to: everything gets updated without you thinking about it.
+But the truth is, this stairway does not lead to heaven.</p>
+<p>Let’s stop and think about <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> for a minute.
+This function updates <strong>every time a reactive object it contains is invalidated</strong>.
+Yes, this works well if you have a small number of reactive objects in the observer, but that gets tricky when you start adding a long list of things inside your <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code>, as you might be launching a computation 10 times if your reactive scope contains 10 reactive objects that are somehow invalidated in chain.
+And believe us, we have seen pieces of code where the <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> contains hundreds of lines of code, with reactive objects all over the place, with one <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> context being invalidated dozens of times when one input changes in the application.</p>
+<p>For example, let’s start with that:</p>
+<div class="sourceCode" id="cb258"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## DO NOT DO GLOBAL VARIABLES, IT'S JUST TO SIMPLIFY THE EXAMPLE</span></span>
+<span><span class="co"># We initiate a counter that will help to track how many times </span></span>
+<span><span class="co"># some pieces of the code are called</span></span>
+<span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://cli.r-lib.org">cli</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We are adding a simple text input </span></span>
+<span>    <span class="co"># that will be printed to the console</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html">textInput</a></span><span class="op">(</span><span class="st">"txt"</span>, <span class="st">"Text"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Every time this reactive context is invalidated, </span></span>
+<span>    <span class="co"># we add 1 to the i value</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;&lt;-</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="co"># We print the i value to the console, </span></span>
+<span>    <span class="co"># and the value of input$txt</span></span>
+<span>    <span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">txt</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>Oh, and then, let’s add a small <code><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput()</a></code>:</p>
+<div class="sourceCode" id="cb259"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://cli.r-lib.org">cli</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We are adding a simple text input </span></span>
+<span>    <span class="co"># that will be printed to the console</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html">textInput</a></span><span class="op">(</span><span class="st">"txt"</span>, <span class="st">"Text"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># We add a selectInput() to allow text transformation</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"casefolding"</span>, </span>
+<span>      <span class="st">"Casefolding"</span>, </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lower"</span>, <span class="st">"upper"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Every time this reactive context </span></span>
+<span>    <span class="co"># is invalidated, we add 1 to the i value</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;&lt;-</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="co"># We print the i value to the console</span></span>
+<span>    <span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="co"># If the user select lower, then the text is </span></span>
+<span>    <span class="co"># passed through tolower, otherwise it's passed </span></span>
+<span>    <span class="co"># through toupper</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">casefolding</span> <span class="op">==</span> <span class="st">"lower"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">txt</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span>  <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">txt</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>And, as time goes by, we add another control flow to our <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code>:</p>
+<div class="sourceCode" id="cb260"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://cli.r-lib.org">cli</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stringi.gagolewski.com/">stringi</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We are adding a simple text input </span></span>
+<span>    <span class="co"># that will be printed to the console</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html">textInput</a></span><span class="op">(</span><span class="st">"txt"</span>, <span class="st">"Text"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># We add a selectInput() to allow text transformation</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"casefolding"</span>, </span>
+<span>      <span class="st">"Casefolding"</span>, </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lower"</span>, <span class="st">"upper"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="co"># A new checkbox to reverse (or not) the input text</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/checkboxInput.html">checkboxInput</a></span><span class="op">(</span><span class="st">"rev"</span>, <span class="st">"reverse"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Every time this reactive context </span></span>
+<span>    <span class="co"># is invalidated, we add 1 to the i value</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;&lt;-</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="co"># We print the i value to the console</span></span>
+<span>    <span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="co"># Use input_txt as a container for our input</span></span>
+<span>    <span class="va">input_txt</span> <span class="op">&lt;-</span> <span class="va">input</span><span class="op">$</span><span class="va">txt</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">rev</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="co"># If the input$rev is select, we reverse the text</span></span>
+<span>      <span class="va">input_txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_reverse.html">stri_reverse</a></span><span class="op">(</span><span class="va">input_txt</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="co"># If the user select lower, then the text is </span></span>
+<span>    <span class="co"># passed through tolower, otherwise it's passed </span></span>
+<span>    <span class="co"># through toupper</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">casefolding</span> <span class="op">==</span> <span class="st">"lower"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">input_txt</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span>  <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span><span class="op">(</span><span class="va">input_txt</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>And it would be nice to keep the selected values in a reactive list, so that we can reuse it elsewhere.
+And maybe you would like to add a checkbox so that the logs are printed to the console only if checked.</p>
+<div class="sourceCode" id="cb261"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://cli.r-lib.org">cli</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stringi.gagolewski.com/">stringi</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We are adding a simple text input </span></span>
+<span>    <span class="co"># that will be printed to the console</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html">textInput</a></span><span class="op">(</span><span class="st">"txt"</span>, <span class="st">"Text"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># We add a selectInput() to allow text transformation</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"casefolding"</span>, </span>
+<span>      <span class="st">"Casefolding"</span>, </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lower"</span>, <span class="st">"upper"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="co"># A new checkbox to reverse (or not) the input text</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/checkboxInput.html">checkboxInput</a></span><span class="op">(</span><span class="st">"rev"</span>, <span class="st">"reverse"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co"># We are using a reactiveValues to keep this input value</span></span>
+<span>  <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/reactiveValues.html">reactiveValues</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Every time this reactive context </span></span>
+<span>    <span class="co"># is invalidated, we add 1 to the i value</span></span>
+<span>    <span class="va">i</span> <span class="op">&lt;&lt;-</span> <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="co"># We print the i value to the console</span></span>
+<span>    <span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">rev</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="co"># If the input$rev is select, we reverse the text</span></span>
+<span>      <span class="va">r</span><span class="op">$</span><span class="va">input_txt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/stringi/man/stri_reverse.html">stri_reverse</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">input_txt</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="co"># Otherwise, we leave it as it is</span></span>
+<span>      <span class="va">r</span><span class="op">$</span><span class="va">input_txt</span> <span class="op">&lt;-</span> <span class="va">input</span><span class="op">$</span><span class="va">txt</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="co"># If the user select lower, then the text is </span></span>
+<span>    <span class="co"># passed through tolower, otherwise it's passed </span></span>
+<span>    <span class="co"># through toupper</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">casefolding</span> <span class="op">==</span> <span class="st">"lower"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/chartr.html">tolower</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">input_txt</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span>  <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">input_txt</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>Ok, now can you tell how many potential invalidation points we have here?
+Three: whenever <code>input$txt</code>, <code>input$rev</code> or <code>input$casefolding</code> change.
+Of course, three is not that much, but you get the idea.</p>
+<p>Let’s pause a minute and think about why we use <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> here.
+To update the values inside <code>r$input_txt</code>, yes.
+But do we need to use <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> for, say, updating <code>r$input_txt</code> under dozens of conditions, each time the user types a letter?
+Possibly not.</p>
+<p>We generally want our observer to update its content under a small, controlled number of inputs, i.e. with a controlled number of invalidation points.
+And, what we often forget is that users do not type/select correctly on the first try.
+No, they usually try and miss, restart, change things, amplifying the reactivity “over-happening”.</p>
+<p>Moreover, long <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code> statements are hard to debug, and they make collaboration harder when the trigger to the observe logic can potentially live anywhere between line one and line 257 of your <code><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe()</a></code>.
+That’s why (well, in 99% of cases), it is safer to go with <code>observeEvent</code>, as it allows you to see at a glance the condition under which the content is invalidated and re-evaluated.
+Then, if a reactive context is invalidated, <strong>you know why</strong>.
+For example, here is where the reactive invalidation can happen (lines with a <code>*</code>)<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Of course it’s an over-simplification: the reactive context will not be invalidated in all of these contexts. The idea is to illustrate how &lt;code&gt;observe()&lt;/code&gt; can lead to invalidation points that are spread all across the code bloc.&lt;/p&gt;"><sup>60</sup></a>:</p>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="common-app-caveats.html#cb262-1" tabindex="-1"></a><span class="fu">observe</span>({</span>
+<span id="cb262-2"><a href="common-app-caveats.html#cb262-2" tabindex="-1"></a>    i <span class="ot">&lt;&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb262-3"><a href="common-app-caveats.html#cb262-3" tabindex="-1"></a>    <span class="fu">cat_rule</span>(<span class="fu">as.character</span>(i))</span>
+<span id="cb262-4"><a href="common-app-caveats.html#cb262-4" tabindex="-1"></a><span class="sc">*</span>   <span class="cf">if</span> (input<span class="sc">$</span>rev){</span>
+<span id="cb262-5"><a href="common-app-caveats.html#cb262-5" tabindex="-1"></a><span class="sc">*</span>     r<span class="sc">$</span>input_txt <span class="ot">&lt;-</span> <span class="fu">stri_reverse</span>(r<span class="sc">$</span>input_txt)</span>
+<span id="cb262-6"><a href="common-app-caveats.html#cb262-6" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb262-7"><a href="common-app-caveats.html#cb262-7" tabindex="-1"></a><span class="sc">*</span>     r<span class="sc">$</span>input_txt <span class="ot">&lt;-</span> input<span class="sc">$</span>txt</span>
+<span id="cb262-8"><a href="common-app-caveats.html#cb262-8" tabindex="-1"></a>    }</span>
+<span id="cb262-9"><a href="common-app-caveats.html#cb262-9" tabindex="-1"></a><span class="sc">*</span>   <span class="cf">if</span> (input<span class="sc">$</span>casefolding <span class="sc">==</span> <span class="st">"lower"</span>) {</span>
+<span id="cb262-10"><a href="common-app-caveats.html#cb262-10" tabindex="-1"></a><span class="sc">*</span>     <span class="fu">print</span>(<span class="fu">tolower</span>(r<span class="sc">$</span>input_txt))</span>
+<span id="cb262-11"><a href="common-app-caveats.html#cb262-11" tabindex="-1"></a>    } <span class="cf">else</span>  {</span>
+<span id="cb262-12"><a href="common-app-caveats.html#cb262-12" tabindex="-1"></a><span class="sc">*</span>     <span class="fu">print</span>(<span class="fu">toupper</span>(r<span class="sc">$</span>input_txt))</span>
+<span id="cb262-13"><a href="common-app-caveats.html#cb262-13" tabindex="-1"></a>    }</span>
+<span id="cb262-14"><a href="common-app-caveats.html#cb262-14" tabindex="-1"></a>})</span></code></pre></div>
+<p>Whereas in this refactored code using <code><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent()</a></code>, it is easier to identify where the invalidation can happen:</p>
+<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="common-app-caveats.html#cb263-1" tabindex="-1"></a><span class="fu">observeEvent</span>( <span class="fu">c</span>(</span>
+<span id="cb263-2"><a href="common-app-caveats.html#cb263-2" tabindex="-1"></a><span class="sc">*</span>  input<span class="sc">$</span>rev, </span>
+<span id="cb263-3"><a href="common-app-caveats.html#cb263-3" tabindex="-1"></a><span class="sc">*</span>  input<span class="sc">$</span>txt</span>
+<span id="cb263-4"><a href="common-app-caveats.html#cb263-4" tabindex="-1"></a>),{</span>
+<span id="cb263-5"><a href="common-app-caveats.html#cb263-5" tabindex="-1"></a>  i <span class="ot">&lt;&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb263-6"><a href="common-app-caveats.html#cb263-6" tabindex="-1"></a>  <span class="fu">cat_rule</span>(<span class="fu">as.character</span>(i))</span>
+<span id="cb263-7"><a href="common-app-caveats.html#cb263-7" tabindex="-1"></a>  <span class="cf">if</span> (input<span class="sc">$</span>rev){</span>
+<span id="cb263-8"><a href="common-app-caveats.html#cb263-8" tabindex="-1"></a>    r<span class="sc">$</span>input_txt <span class="ot">&lt;-</span> <span class="fu">stri_reverse</span>(r<span class="sc">$</span>input_txt)</span>
+<span id="cb263-9"><a href="common-app-caveats.html#cb263-9" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb263-10"><a href="common-app-caveats.html#cb263-10" tabindex="-1"></a>    r<span class="sc">$</span>input_txt <span class="ot">&lt;-</span> input<span class="sc">$</span>txt</span>
+<span id="cb263-11"><a href="common-app-caveats.html#cb263-11" tabindex="-1"></a>  }</span>
+<span id="cb263-12"><a href="common-app-caveats.html#cb263-12" tabindex="-1"></a>  <span class="cf">if</span> (input<span class="sc">$</span>casefolding <span class="sc">==</span> <span class="st">"lower"</span>) {</span>
+<span id="cb263-13"><a href="common-app-caveats.html#cb263-13" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">tolower</span>(r<span class="sc">$</span>input_txt))</span>
+<span id="cb263-14"><a href="common-app-caveats.html#cb263-14" tabindex="-1"></a>  } <span class="cf">else</span>  {</span>
+<span id="cb263-15"><a href="common-app-caveats.html#cb263-15" tabindex="-1"></a>    <span class="fu">print</span>(<span class="fu">toupper</span>(r<span class="sc">$</span>input_txt))</span>
+<span id="cb263-16"><a href="common-app-caveats.html#cb263-16" tabindex="-1"></a>  }</span>
+<span id="cb263-17"><a href="common-app-caveats.html#cb263-17" tabindex="-1"></a>})</span></code></pre></div>
+</div>
+<div id="building-triggers-and-watchers" class="section level3" number="15.1.3">
+<h3>
+<span class="header-section-number">15.1.3</span> Building triggers and watchers<a class="anchor" aria-label="anchor" href="#building-triggers-and-watchers"><i class="fas fa-link"></i></a>
+</h3>
+<p>To prevent this, one way to go is to create “flag” objects, which can be thought of as internal buttons to control what you want to invalidate: you create the button, set some places where you want these buttons to invalidate the context, and finally press these buttons.</p>
+<p>These objects are launched with an <code>init</code> function, then these flags are triggered with <code><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">trigger()</a></code>, and wherever we want these flags to invalidate a reactive context, we <code><a href="https://testthat.r-lib.org/reference/watch.html">watch()</a></code> these flags.</p>
+<p>The idea here is to get full control over the reactive flow: we only invalidate contexts when we want, making the general flow of the app more predictable.
+These flags are available using the <a href="https://github.com/ColinFay/gargoyle">gargoyle</a> <span class="citation">(<a href="references.html#ref-R-gargoyle">Fay 2023e</a>)</span> package, that can be installed from GitHub with:</p>
+<div class="sourceCode" id="cb264"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># CRAN version </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"gargoyle"</span><span class="op">)</span></span>
+<span><span class="co"># Dev version</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ColinFay/gargoyle"</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li><p><code>gargoyle::init("this")</code> initiates a <code>"this"</code> flag: most of the time you will be generating them at the <code>app_server()</code> level.</p></li>
+<li><p><code>gargoyle::watch("this")</code> sets the flag inside a reactive context, so that it will be invalidated every time you <code>trigger("this")</code> this flag.</p></li>
+<li><p><code>gargoyle::trigger("this")</code> triggers the flags.</p></li>
+</ul>
+<p>And, bonus, as these functions use the <code>session</code> object, they are available across all modules.
+That also means that you can easily trigger an event inside a module from another one.</p>
+<p>This pattern is, for example, implemented in <a href="https://github.com/colinfay/hexmake">hexmake</a> <span class="citation">(<a href="references.html#ref-R-hexmake">Fay 2023g</a>)</span> (though not with <a href="https://github.com/ColinFay/gargoyle">gargoyle</a>), where the rendering of the image on the right is fully controlled by the <a href="https://github.com/ColinFay/hexmake/blob/master/R/mod_right.R#L40"><code>"render"</code> flag</a>.
+The idea here is to allow complete control over when the image is recomputed: only when <code>trigger("render")</code> is called does the app regenerate the image, helping us lower the reactivity of the application.
+That might seem like a lot of extra work, but that is definitely worth considering in the long run, as it will help in optimizing the rendering (fewer computations), and lowering the number of errors that can result from too much reactivity inside an application.</p>
+<p>Here is a small example of this implementation, using an environment to store the value.
+When using this pattern, we do not rely on any reactive value invalidating the reactive context: the second result is only displayed when the <code>"render2"</code> flag is triggered, giving us a full control on how the reactivity is propagated.</p>
+<div class="sourceCode" id="cb265"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ColinFay/gargoyle">gargoyle</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/fluidPage.html">fluidPage</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>      <span class="co"># Creating an action button to launch the computation</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span><span class="st">"compute"</span>, <span class="st">"Compute"</span><span class="op">)</span>, </span>
+<span>      <span class="co"># Output for all runif()</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">verbatimTextOutput</a></span><span class="op">(</span><span class="st">"result"</span><span class="op">)</span>, </span>
+<span>      <span class="co"># This output will change only if runif() &gt; 0.5</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">verbatimTextOutput</a></span><span class="op">(</span><span class="st">"result2"</span><span class="op">)</span>,</span>
+<span>      <span class="co"># This button will reset x$results to 0, we use it </span></span>
+<span>      <span class="co"># to show that it won't launch a series of reactivity </span></span>
+<span>      <span class="co"># invalidation</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span><span class="st">"reset"</span>, <span class="st">"Reset x"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># Mimic an R6 class, i.e. a non-reactive object</span></span>
+<span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/environment.html">environment</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># Creating two watchers</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">init</a></span><span class="op">(</span><span class="st">"render_result"</span>, <span class="st">"render_result2"</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">compute</span> , <span class="op">{</span></span>
+<span>    <span class="co"># When the user presses compute, we launch runif()</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span>    <span class="co"># Every time a new value is stored, we render result</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">trigger</a></span><span class="op">(</span><span class="st">"render_result"</span><span class="op">)</span></span>
+<span>    <span class="co"># Only render the second result if x$results is over 0.5</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">results</span> <span class="op">&gt;</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">trigger</a></span><span class="op">(</span><span class="st">"render_result2"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Will be rendered every time</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">watch</a></span><span class="op">(</span><span class="st">"render_result"</span><span class="op">)</span></span>
+<span>    <span class="co"># require x$results before rendering the output</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/req.html">req</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">results</span><span class="op">)</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">results</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  </span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">result2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># This will only be rendered if trigger("render_result2")</span></span>
+<span>    <span class="co"># is called</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">watch</a></span><span class="op">(</span><span class="st">"render_result2"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/req.html">req</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">results</span><span class="op">)</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">results</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">reset</span> , <span class="op">{</span></span>
+<span>    <span class="co"># This resets x$results. This code block is here</span></span>
+<span>    <span class="co"># to show that reactivity is not triggered in this app </span></span>
+<span>    <span class="co"># unless a trigger() is called</span></span>
+<span>    <span class="va">x</span><span class="op">$</span><span class="va">results</span> <span class="op">&lt;-</span>  <span class="fl">0</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">results</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="using-r6-as-data-storage" class="section level3" number="15.1.4">
+<h3>
+<span class="header-section-number">15.1.4</span> Using R6 as data storage<a class="anchor" aria-label="anchor" href="#using-r6-as-data-storage"><i class="fas fa-link"></i></a>
+</h3>
+<p>One pattern we have also been playing with is storing the app business logic inside one or more R6 objects.
+Why would we want to do that?</p>
+<div id="a.-sharing-data-across-modules" class="section level4 unnumbered">
+<h4>A. Sharing data across modules<a class="anchor" aria-label="anchor" href="#a.-sharing-data-across-modules"><i class="fas fa-link"></i></a>
+</h4>
+<p>Sharing an R6 object makes it simpler to create data that are shared across modules, but without the complexity generated by reactive objects, and the instability of using global variables.</p>
+<p>Basically, the idea is to hold the whole logic of your <strong>data</strong> <strong>reading/cleaning/processing/outputting inside an R6 class</strong>.
+An object of this class is then initiated at the top level of your application, and you can pass this object to the sub-modules.
+Of course, this makes even more sense if you are combining it with the trigger/watch pattern from before!</p>
+<div class="sourceCode" id="cb266"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">data_cleaning_ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/NS.html">NS</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Defining the UI for your first module</span></span>
+<span>    <span class="co"># [...]</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">mod_data_cleaning_server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span>, <span class="va">r6</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/moduleServer.html">moduleServer</a></span><span class="op">(</span> <span class="va">id</span>, <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">ns</span> <span class="op">&lt;-</span> <span class="va">session</span><span class="op">$</span><span class="va">ns</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">launch_cleaning</span> , <span class="op">{</span></span>
+<span>      <span class="co"># Once the launch_cleaning input is triggered, we </span></span>
+<span>      <span class="co"># use the internal method from our r6 object </span></span>
+<span>      <span class="va">r6</span><span class="op">$</span><span class="fu">clean</span><span class="op">(</span>arg1 <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">a</span>, arg2 <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">b</span><span class="op">)</span></span>
+<span>      <span class="co"># Triggering the plot</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">trigger</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">plotting_ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/NS.html">NS</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Defining the UI for your second module</span></span>
+<span>    <span class="co"># [...]</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">mod_plotting_server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">id</span>, <span class="va">r6</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/moduleServer.html">moduleServer</a></span><span class="op">(</span> <span class="va">id</span>, <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">ns</span> <span class="op">&lt;-</span> <span class="va">session</span><span class="op">$</span><span class="va">ns</span></span>
+<span>    <span class="co"># Rendering, inside this second module, the plot based on the </span></span>
+<span>    <span class="co"># cleaning done in the other module</span></span>
+<span>    <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>      <span class="co"># We use the trigger/watch pattern from before</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/gargoyle/man/Event.html">watch</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>      <span class="co"># Calling the plot() method from our R6 object</span></span>
+<span>      <span class="va">r6</span><span class="op">$</span><span class="fu">plot</span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Putting our two module UIs here</span></span>
+<span>    <span class="fu">data_cleaning_ui</span><span class="op">(</span><span class="st">"data_cleaning_ui"</span><span class="op">)</span>,</span>
+<span>    <span class="fu">plotting_ui</span><span class="op">(</span><span class="st">"plotting_ui"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co"># We start by creating a new instance of th</span></span>
+<span>  <span class="va">r6</span> <span class="op">&lt;-</span> <span class="va">MyDataProcessing</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="co"># Passing this object to the two server functions</span></span>
+<span>  <span class="fu">mod_data_cleaning_server</span><span class="op">(</span><span class="st">"data_cleaning_ui_1"</span>, <span class="va">r6</span><span class="op">)</span></span>
+<span>  <span class="fu">mod_plotting_server</span><span class="op">(</span><span class="st">"plotting_ui_1"</span>, <span class="va">r6</span><span class="op">)</span></span>
+<span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="b.-be-sure-it-is-tested" class="section level4 unnumbered">
+<h4>B. Be sure it is tested<a class="anchor" aria-label="anchor" href="#b.-be-sure-it-is-tested"><i class="fas fa-link"></i></a>
+</h4>
+<p>During the process of building a robust <a href="https://shiny.rstudio.com/">shiny</a> app, we strongly suggest that you test as many things as you can.
+This is where using an R6 for the business logic of your app makes sense: this allows you to build the whole testing of your application data logic outside of any reactive context: you simply build unit tests just as any other function.</p>
+<p>For example, let’s say we have the following R6 generator:</p>
+<div class="sourceCode" id="cb267"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">MyData</span> <span class="op">&lt;-</span> <span class="fu">R6</span><span class="fu">::</span><span class="kw"><a href="https://r6.r-lib.org/reference/R6Class.html">R6Class</a></span><span class="op">(</span></span>
+<span>  <span class="st">"MyData"</span>, </span>
+<span>  <span class="co"># Defining our public methods, that will be </span></span>
+<span>  <span class="co"># the dataset container, and a summary function</span></span>
+<span>  public <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    initialize <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">self</span><span class="op">$</span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span></span>
+<span>    <span class="op">}</span>, </span>
+<span>    summarize <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">self</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We can then build a test for this class using <a href="https://testthat.r-lib.org">testthat</a>:</p>
+<div class="sourceCode" id="cb268"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://testthat.r-lib.org">testthat</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_that.html">test_that</a></span><span class="op">(</span><span class="st">"R6 Class works"</span>, <span class="op">{</span></span>
+<span>  <span class="co"># We define a new instance of this class, that will contain </span></span>
+<span>  <span class="co"># the mtcars data.frame</span></span>
+<span>  <span class="va">my_data</span> <span class="op">&lt;-</span> <span class="va">MyData</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
+<span>  <span class="co"># We will expect my_data to have two classes: </span></span>
+<span>  <span class="co"># "MyData" and "R6"</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/expect_is.html">expect_is</a></span><span class="op">(</span><span class="va">my_data</span>, <span class="st">"MyData"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/expect_is.html">expect_is</a></span><span class="op">(</span><span class="va">my_data</span>, <span class="st">"R6"</span><span class="op">)</span></span>
+<span>  <span class="co"># And the summarize method to return a table</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/expect_is.html">expect_is</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">$</span><span class="fu">summarize</span><span class="op">(</span><span class="op">)</span>, <span class="st">"table"</span><span class="op">)</span></span>
+<span>  <span class="co"># We would expect the data contained in the object </span></span>
+<span>  <span class="co"># to match the one taken as input to new()</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/equality-expectations.html">expect_equal</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">$</span><span class="va">data</span>, <span class="va">mtcars</span><span class="op">)</span></span>
+<span>  <span class="co"># And the summarize method to be equal to the summary()</span></span>
+<span>  <span class="co">#  on the input object</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/equality-expectations.html">expect_equal</a></span><span class="op">(</span><span class="va">my_data</span><span class="op">$</span><span class="fu">summarize</span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Test passed 🌈</code></pre>
+<p>Using R6 allows to rely on these battle-tested tools when it comes to testing functions, something which is made more complex when using other patterns like <code><a href="https://rdrr.io/pkg/shiny/man/reactiveValues.html">reactiveValues()</a></code>.</p>
+</div>
+</div>
+<div id="logging-reactivity-with-whereami" class="section level3" number="15.1.5">
+<h3>
+<span class="header-section-number">15.1.5</span> Logging reactivity with <code>{whereami}</code><a class="anchor" aria-label="anchor" href="#logging-reactivity-with-whereami"><i class="fas fa-link"></i></a>
+</h3>
+<p>Getting a good sense of how reactivity is actually working in your app is not an easy task: the reactivity logic is a graph, and it happens very quickly when you run the app, so it’s very hard to follow everything.</p>
+<p><code><a href="https://rdrr.io/pkg/whereami/man/whereami.html">whereami::whereami()</a></code>’s <span class="citation">(<a href="references.html#ref-R-whereami">Sidi and Müller 2022</a>)</span> goal is simple: informing you about where it is called, i.e. from what file and at which line, and how many times.
+For example, if you add the following piece of code to your <code>app_server()</code>, the location of the function call will be printed to the logs.</p>
+<div class="sourceCode" id="cb270"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">whereami</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/whereami/man/cat_where.html">cat_where</a></span><span class="op">(</span> <span class="fu">whereami</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/whereami/man/whereami.html">whereami</a></span><span class="op">(</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
+<pre><code>── Running server(...) at app_server.R#9 (2) ───────────────</code></pre>
+<p>Combining <code>cat_where()</code> will implement a reactive logging to your console while developing: that way, you can instantaneously know what reactive contexts are invalidated while using the application.
+Of course, you still have to implement it by hand, but that is definitely worth the effort: seeing in real time, in your console, which line is run allows you to detect unexpected behavior.
+For example, you will be able to see that the <code><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent()</a></code> from <code>mod_main.R#79</code> has been called 17 times when launching the app, which might be an unexpected behavior.</p>
+<p>The screenshot in Figure <a href="common-app-caveats.html#fig:15-common-app-caveats-13">15.1</a> shows what a <a href="https://github.com/yonicd/whereami">whereami</a> log might look like, here, for the <a href="https://github.com/colinfay/hexmake">hexmake</a> application.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:15-common-app-caveats-13"></span>
+<img src="img/whereami.png" alt="{whereami} output for {hexmake}." width="100%"><p class="caption">
+FIGURE 15.1: <a href="https://github.com/yonicd/whereami">whereami</a> output for <a href="https://github.com/colinfay/hexmake">hexmake</a>.
+</p>
+</div>
+<p>And bonus, once the app is closed, you can get a list of all the “counters” with <code><a href="https://rdrr.io/pkg/whereami/man/counter.html">whereami::counter_get()</a></code>, and how many times they each have been called, and <code>plot(whereami::counter_get())</code> will draw a raw plot of the various counters, as shown in Figure <a href="common-app-caveats.html#fig:15-common-app-caveats-14">15.2</a>.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:15-common-app-caveats-14"></span>
+<img src="img/plot_whereami.png" alt="plot of {whereami} counters." width="100%"><p class="caption">
+FIGURE 15.2: plot of <a href="https://github.com/yonicd/whereami">whereami</a> counters.
+</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div id="r-does-too-much" class="section level2" number="15.2">
+<h2>
+<span class="header-section-number">15.2</span> R does too much<a class="anchor" aria-label="anchor" href="#r-does-too-much"><i class="fas fa-link"></i></a>
+</h2>
+<div id="rendering-the-ui-from-the-server-side" class="section level3" number="15.2.1">
+<h3>
+<span class="header-section-number">15.2.1</span> Rendering the UI from the server side<a class="anchor" aria-label="anchor" href="#rendering-the-ui-from-the-server-side"><i class="fas fa-link"></i></a>
+</h3>
+<p>There are many reasons we would want to change things on the UI based on what happens in the server: changing the choices of a <code><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput()</a></code> based on the columns of a table which is uploaded by the user, showing and hiding pieces of the app according to an environment variable, allowing the user to create an indeterminate number of inputs, etc.</p>
+<p>Chances are that to do that, you have been using the <code><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html">uiOutput()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/renderUI.html">renderUI()</a></code> functions from <a href="https://shiny.rstudio.com/">shiny</a> <span class="citation">(<a href="references.html#ref-R-shiny">Chang et al. 2022</a>)</span>.
+Even if convenient, and the functions of choice in some specific context, this pair of functions makes R do a little bit too much: you are making R regenerate the whole UI component instead of changing only what you need, which can be a suboptimal, be it from the user point of view, or from a developer perspective.</p>
+<p><strong>One of the instance in which this pattern might not be optimal is in the case where your visitors do not have an high-speed internet or when visiting and using a smartphone, contexts where every byte counts</strong>.
+Rendering large elements from the server side in your <a href="https://shiny.rstudio.com/">shiny</a> app means that these elements will have to transit through the socket, i.e. they need to be sent by the server, and downloaded by the browser.
+In this case, the smaller the message size the better!</p>
+<p>From the developer perspective, you will create code that is harder to reason about, as we are used to having the UI parts in the UI functions (but that is not related to performance).</p>
+<p>Here are three strategies to code without <code><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html">uiOutput()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/renderUI.html">renderUI()</a></code>.</p>
+<div id="a.-implement-ui-events-in-javascript" class="section level4 unnumbered">
+<h4>A. Implement UI events in JavaScript<a class="anchor" aria-label="anchor" href="#a.-implement-ui-events-in-javascript"><i class="fas fa-link"></i></a>
+</h4>
+<blockquote>
+<p>Mixing languages is better than writing everything in one, if and only if using only that one is likely to overcomplicate the program.<br></p>
+<p><em>The Art of UNIX Programming</em> <span class="citation">(<a href="references.html#ref-ericraymond2003">Raymond 2003</a>)</span></p>
+</blockquote>
+<p>We will see in the last chapter of this book how you can integrate JS inside your <a href="https://shiny.rstudio.com/">shiny</a> app, and how even basic functions can be useful for making your app server smaller.
+For example, compare:</p>
+<div class="sourceCode" id="cb272"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Adding a button with an onclick event, </span></span>
+<span>    <span class="co"># that will show or hide the plot</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span></span>
+<span>      <span class="st">"change"</span>, </span>
+<span>      <span class="st">"show/hide graph"</span>, </span>
+<span>      <span class="co"># The toggle() function hide or show the queried element</span></span>
+<span>      onclick <span class="op">=</span> <span class="st">"$('#plot').toggle()"</span></span>
+<span>    <span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># This renderPlot will only be called once</span></span>
+<span>    <span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="st">"Rendering plot"</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span> </span></code></pre></div>
+<p>to</p>
+<div class="sourceCode" id="cb273"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We use a pattern without JavaScript</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span><span class="st">"change"</span>, <span class="st">"show/hide graph"</span><span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Here, every time the button is clicked, this reactive </span></span>
+<span>    <span class="co"># context will be invalidated, and the code re-evaluated</span></span>
+<span>    <span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="st">"Rendering plot"</span><span class="op">)</span></span>
+<span>    <span class="co"># Simulate a show and hide pattern</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/req.html">req</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">change</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>The result is the same, but the first version is shorter and easier to understand: we have one button, and the behavior of the button is self-contained.
+The second solution redraws the plot every time the <code>reactiveValues</code> is updated, making R compute way more than it should, whereas with the JavaScript-only solution, the plot is not recomputed every time you need to show it: the plot is drawn by R only once.</p>
+<p>At a local level, the improvements described in this section will not make your application way faster: for example, rendering UI elements (let’s say rendering a simple title) will not be computationally heavy.
+But at a global level, less UI computation from the server side helps the general rendering of the app: let’s say you have an output that takes 3 seconds to run, then if the whole UI + output is to be rendered on the server side, the whole UI stays blank until everything is computed.</p>
+<p>Compare:</p>
+<div class="sourceCode" id="cb274"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We make the whole UI be generated by R</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html">uiOutput</a></span><span class="op">(</span><span class="st">"caption"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">caption</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderUI.html">renderUI</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Simulate something that takes 3 seconds to run</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>    <span class="co"># Returning the UI</span></span>
+<span>    <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html">h3</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span>, </span>
+<span>      <span class="fu">shinipsum</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_text.html">random_text</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>    </span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>to</p>
+<div class="sourceCode" id="cb275"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Only the text input will be rendered by R</span></span>
+<span>    <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html">h3</a></span><span class="op">(</span><span class="st">"test"</span><span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">textOutput</a></span><span class="op">(</span><span class="st">"caption"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">caption</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderText</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Here, we only render the text, not the whole UI</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>    <span class="fu">shinipsum</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_text.html">random_text</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>In the first example, the UI will wait for the server to have rendered, while in the second we will first see the title, then the rendered text after a few seconds.
+That approach makes the user experience better: they know that something is happening, while a completely blank page is confusing.</p>
+<p>Also, because R is single threaded, manipulating DOM elements from the server side causes R to be busy doing these DOM manipulations while it could be computing something else.
+And let’s imagine it takes a quarter of a second to render the DOM element.
+That is a full second for rendering four of them, while R should be busy doing something else!</p>
+</div>
+<div id="b.-update-inputs" class="section level4 unnumbered">
+<h4>B. <code>update*</code> inputs<a class="anchor" aria-label="anchor" href="#b.-update-inputs"><i class="fas fa-link"></i></a>
+</h4>
+<p>Almost every <a href="https://shiny.rstudio.com/">shiny</a> input, even the custom ones from packages, come with an <code>update_</code> function that allows us to change the input values from the server side, instead of re-creating the UI entirely.
+For example, here is a way to update the content of a <code>selectInput</code> from the server side:</p>
+<div class="sourceCode" id="cb276"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We start the selectInput empty</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span><span class="st">"species"</span>, <span class="st">"Species"</span>, choices <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>, </span>
+<span>    <span class="co"># The selectInput will be populate </span></span>
+<span>    <span class="co"># when the update button is pressed</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span><span class="st">"update"</span>, <span class="st">"Update"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">update</span> , <span class="op">{</span></span>
+<span>    <span class="co"># Update the selectInput with the species from iris</span></span>
+<span>    <span class="va">spc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="va">iris</span><span class="op">$</span><span class="va">Species</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/updateSelectInput.html">updateSelectInput</a></span><span class="op">(</span></span>
+<span>      <span class="va">session</span>, </span>
+<span>      <span class="st">"species"</span>, </span>
+<span>      choices <span class="op">=</span> <span class="va">spc</span>, </span>
+<span>      selected <span class="op">=</span> <span class="va">spc</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>This switch to <code>updateSelectInput</code> makes the code easier to reason about as the <code>selectInput</code> is where it should be: inside the UI, instead of another pattern where we would use <code><a href="https://rdrr.io/pkg/shiny/man/renderUI.html">renderUI()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/htmlOutput.html">uiOutput()</a></code>.
+Plus, with the <code>update</code> method, we are only changing what is needed, not re-generating the whole input.</p>
+</div>
+<div id="c.-insertui-and-removeui" class="section level4 unnumbered">
+<h4>C. <code>insertUI</code> and <code>removeUI</code><a class="anchor" aria-label="anchor" href="#c.-insertui-and-removeui"><i class="fas fa-link"></i></a>
+</h4>
+<p>Another way to dynamically change what is in the UI is with <code><a href="https://rdrr.io/pkg/shiny/man/insertUI.html">insertUI()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/insertUI.html">removeUI()</a></code>.
+It is more global than the solution we have seen before with setting the <code>reactiveValue</code> to <code>NULL</code> or to a value, as it allows us to target a larger UI element: we can insert or remove the whole input, instead of having the DOM element inserted but empty.
+This method allows us to have a smaller DOM: <code>&lt;div&gt;</code> that are not rendered are not generated empty, they are simply not there.</p>
+<p>Two things to note concerning this method, though:</p>
+<ul>
+<li>Removing an element from the app will not delete the input from the input list. In other words, if you have <code>selectInput("x", "x")</code>, and you remove this input using <code><a href="https://rdrr.io/pkg/shiny/man/insertUI.html">removeUI()</a></code>, you will still have <code>input$x</code> in the server.</li>
+</ul>
+<p>For example, in the following example, the <code>input$val</code> value will not be removed once you have called <code>removeUI(selector = "#val")</code>.</p>
+<div class="sourceCode" id="cb277"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Creating a text input that will be removed</span></span>
+<span>    <span class="co">#  from the UI whenever the remove button is pressed</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textInput.html">textInput</a></span><span class="op">(</span><span class="st">"value"</span>, <span class="st">"Value"</span>, <span class="st">"place"</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span><span class="st">"remove"</span>, <span class="st">"Remove UI"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">remove</span> , <span class="op">{</span></span>
+<span>    <span class="co"># When the button is pressed,</span></span>
+<span>    <span class="co">#  the textInput will be removed from the UI</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/insertUI.html">removeUI</a></span><span class="op">(</span>selector <span class="op">=</span> <span class="st">"#value"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observe.html">observe</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># We observe input$value every second. </span></span>
+<span>    <span class="co"># You'll realize that even after the UI</span></span>
+<span>    <span class="co"># is removed, input$value is still available.</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/invalidateLater.html">invalidateLater</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>Both these functions take a <code>jQuery</code> selector to select the element in the UI. We will introduce these selectors in Chapter <a href="using-javascript.html#using-javascript">17</a>.</li>
+</ul>
+</div>
+</div>
+<div id="too-much-data-in-memory" class="section level3" number="15.2.2">
+<h3>
+<span class="header-section-number">15.2.2</span> Too much data in memory<a class="anchor" aria-label="anchor" href="#too-much-data-in-memory"><i class="fas fa-link"></i></a>
+</h3>
+<p>If you are building a <a href="https://shiny.rstudio.com/">shiny</a> application, there is a great chance you are building it to analyze data.
+If you are dealing with large datasets, <strong>you should consider deporting the data handling and computation to an external database system: for example, to an SQL database</strong>.
+Why?
+Because these systems have been created to handle and manipulate data on disk: in other words, it will allow you to perform operations on your data without having to clutter R memory with a large dataset.</p>
+<p>For example, if you have a <code><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput()</a></code> that is used to perform a filter on a dataset, you can do that filter straight inside SQL, instead of bringing all the data to R and then doing the filter.
+That is even more necessary if you are building the app for a large number of users: for example if one <a href="https://shiny.rstudio.com/">shiny</a> session takes up to 300MB, multiply that by the number of users that will need one session, and you will have a rough estimate of how much RAM you will need.
+On the contrary, if you reduce the data manipulation so that it is done by the back-end, you will have, let’s say, one database with 300MB of data, so the database size will remain (more or less constant), and the only RAM used by <a href="https://shiny.rstudio.com/">shiny</a> will be the data manipulation, not the data storage.
+That’s even more true now that almost any operation you can do today in <a href="https://dplyr.tidyverse.org">dplyr</a> <span class="citation">(<a href="references.html#ref-R-dplyr">Wickham, François, et al. 2023</a>)</span> would be doable with an SQL back-end, and that is the purpose of the <a href="https://dbplyr.tidyverse.org/">dbplyr</a> <span class="citation">(<a href="references.html#ref-R-dbplyr">Wickham, Girlich, and Ruiz 2023</a>)</span> package: translates <a href="https://dplyr.tidyverse.org">dplyr</a> code into SQL.</p>
+<p>If using a database as a back-end seems a little bit far-fetched right now, that is how it is done in most programming languages: if you are building a web app with NodeJS or Python for example, and need to interact with data, nothing will be stored in RAM: you will be relying on an external database to store your data.
+Then your application will be used to make queries to this database back-end.</p>
+</div>
+</div>
+<div id="reading-data" class="section level2" number="15.3">
+<h2>
+<span class="header-section-number">15.3</span> Reading data<a class="anchor" aria-label="anchor" href="#reading-data"><i class="fas fa-link"></i></a>
+</h2>
+<p><a href="https://shiny.rstudio.com/">shiny</a> applications are a tool of choice when it comes to analyzing data.
+But that also means that these data have to be imported/read at some point in time, and reading data can be time consuming.
+How can we optimize that?
+In this section, we will take a look at three strategies: including datasets inside your application, using R packages for fast data reading, and when and why you should move to an external database system.</p>
+<div id="including-data-in-your-application" class="section level3" number="15.3.1">
+<h3>
+<span class="header-section-number">15.3.1</span> Including data in your application<a class="anchor" aria-label="anchor" href="#including-data-in-your-application"><i class="fas fa-link"></i></a>
+</h3>
+<p>If you are building your application using the <a href="https://github.com/ThinkR-open/golem">golem</a> <span class="citation">(<a href="references.html#ref-R-golem">Fay, Guyader, Rochette, et al. 2023</a>)</span> framework, you are building your application as a package.
+R packages provide a way to include internal datasets, which can then be used as objects inside your app.
+This is the solution you should go for if your data are never to rarely updated: the datasets are created during package development, then included inside the build of your package.
+The plus side of this approach is that it makes the data fast to read, as they are serialized as R native objects.</p>
+<p>To include data inside your application, you can use the <code>usethis::use_data_raw( name = "my_dataset", open = FALSE )</code> command, which is inside the <code>02_dev.R</code> script inside the <code>dev/</code> folder of your source application (if you are building the app with <a href="https://github.com/ThinkR-open/golem">golem</a>).
+This will create a folder called <code>data-raw</code> at the root of your application folder, with a script to prepare your dataset.
+Here, you can read the data, modify it if necessary, and then save it with <code>usethis::use_data(my_dataset)</code>.
+Once this is done, you will have access to the <code>my_dataset</code> object inside your application.</p>
+<p>This is, for example, what is done in the <a href="http://www.github.com/ColinFay/tidytuesday201942">tidytuesday201942</a> <span class="citation">(<a href="references.html#ref-R-tidytuesday201942">Fay 2023l</a>)</span> application, in <a href="https://github.com/ColinFay/tidytuesday201942/blob/master/data-raw/big_epa_cars.R">data-raw/big_epa_cars.R</a>: the CSV data are read there, and then used as an internal dataset inside the application.</p>
+</div>
+<div id="reading-external-datasets" class="section level3" number="15.3.2">
+<h3>
+<span class="header-section-number">15.3.2</span> Reading external datasets<a class="anchor" aria-label="anchor" href="#reading-external-datasets"><i class="fas fa-link"></i></a>
+</h3>
+<p>Other applications use data that are not available at build time: they are created to analyze data that are uploaded by users, or maybe they are fetched from an external service while using the app (for example, by calling an API).
+When you are building an application for the “user data” use case, the first thing you will need is to provide users a way to upload their dataset: <code><a href="https://rdrr.io/pkg/shiny/man/fileInput.html">shiny::fileInput()</a></code>.</p>
+<p>One crucial thing to keep in mind when it comes to using user-uploaded files is that you have to be (very) strict with the way you handle files:</p>
+<ul>
+<li>Always specify what type of file you want: <code><a href="https://rdrr.io/pkg/shiny/man/fileInput.html">shiny::fileInput()</a></code> has an <code>accept</code> parameter that allows you to set one or more <a href="https://en.wikipedia.org/wiki/Media_type">MIME types</a> or extensions. When using this argument (for example, with <code>text/csv</code>, <code>.csv</code>, or <code>.xlsx</code>), the user will only be able to select a subset of files from their computer: the ones that match the type.</li>
+<li>Always perform checks once the file is uploaded, even more if it is tabular data: column type, naming, empty rows, etc. The more you check the file for potential errors, the less your application is likely to fail to analyze this uploaded dataset.</li>
+<li>If the data reading takes a while, do not forget to add a visual progression cue: a <code><a href="https://rdrr.io/pkg/shiny/man/withProgress.html">shiny::withProgress()</a></code> or tools from the <a href="https://github.com/JohnCoene/waiter"><code>{waiter}</code></a> package.</li>
+</ul>
+<p>Whenever you offer a user the possibility to upload anything, you can be sure that at some point, they will upload a file that will make the app crash.
+By setting a specific MIME type and by doing a series of checks once the file is uploaded, you will make your application more stable.
+Finally, having a visual cue that “something is happening” is very important for the user experience, because “something is happening” is better than not knowing what is happening, and it may also prevent the user from clicking again and again on the upload button, or worse, they will stop using the app.</p>
+<p>Now that we have our <code><a href="https://rdrr.io/pkg/shiny/man/fileInput.html">fileInput()</a></code> set, how do we read these data as fast as possible?
+There are several options depending on the type of data you are reading.
+Here are some packages that can make the file reading faster:</p>
+<ul>
+<li>For a tabular, flat dataset (typically csv, tsv, or text), <a href="https://vroom.r-lib.org">vroom</a> <span class="citation">(<a href="references.html#ref-R-vroom">Hester, Wickham, and Bryan 2023</a>)</span> can read data at a 1.40 GB/sec speed. The <code>fread()</code> function from <a href="https://r-datatable.com">data.table</a> <span class="citation">(<a href="references.html#ref-R-data.table">Dowle and Srinivasan 2023</a>)</span> is also fast at reading delimited files.</li>
+<li>For JSON files, <a href="https://arxiv.org/abs/1403.2805">jsonlite</a> <span class="citation">(<a href="references.html#ref-jsonlite2014">Ooms 2014</a>)</span>. Or more recently, <code>{RcppSimdJSON}</code> <span class="citation">(<a href="references.html#ref-R-RcppSimdJson">Eddelbuettel, Knapp, and Lemire 2023</a>)</span>, which is a binding to the <code>simdjson</code> C++ library.</li>
+<li>If you need to read Excel files inside your app, <a href="https://readxl.tidyverse.org">readxl</a> <span class="citation">(<a href="references.html#ref-R-readxl">Wickham and Bryan 2023</a>)</span> offers a binding to the <a href="http://rapidxml.sourceforge.net/"><code>RapidXML</code></a> C++ library, which reads Excel files fast.</li>
+<li>Most files exported from statistical software (SAS, SPSS, etc.) can be read using either the <a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a> <span class="citation">(<a href="references.html#ref-R-foreign">R Core Team 2022</a>)</span> or <a href="https://haven.tidyverse.org">haven</a> <span class="citation">(<a href="references.html#ref-R-haven">Wickham, Miller, and Smith 2023</a>)</span> packages.</li>
+</ul>
+</div>
+<div id="using-external-databases" class="section level3" number="15.3.3">
+<h3>
+<span class="header-section-number">15.3.3</span> Using external databases<a class="anchor" aria-label="anchor" href="#using-external-databases"><i class="fas fa-link"></i></a>
+</h3>
+<p>Another type of data analyzed in a shiny application is data that is contained inside an external database.
+Databases are heavily used in the data science world and in software engineering as a whole.
+Databases come with APIs and drivers that help retrieve and transfer data: be it SQL, NoSQL, or even a graph.</p>
+<p>Using a database is one of the solutions for making your app smaller and more efficient in the long run, especially if you need to scale your app to thousands of visitors.
+Indeed, <strong>if you plan on having your app scale to numerous people, that will mean that a lot of R processes will be triggered. And if your data is contained in your app, this will mean that each R process will take a significant amount of RAM if the dataset is large</strong>.
+For example, if your dataset alone takes ~300 MB of RAM, that means that if you want to launch the app 10 times, you will need ~3GB of RAM.
+On the other hand, if you decide to switch these data to an external database, it will lower the global RAM need: the DB will take these 300MB of data, and each shiny application will make a request to the database.
+For instance, if the database needs 300MB, and one shiny app 50MB, then 10 apps will be 300MB (for the DB) + 50MB * 10 (for the 10 apps).
+In practice, other things are to be considered: making database requests can be computationally expensive, and might need some network adjustments, but you get the idea.</p>
+<p>How does one choose between database back-end?
+Well, first of all you need to see what is available in the environment the application will be deployed: maybe the company you are building the application for already has database servers deployed.
+If ever you are free to choose any database as a back-end, your choice should be driven by what kind of operations you want to make on these databases.
+<strong>For example, SQL databases are designed to store tabular data, and they tend to be very fast when it comes to reading data: so if you have one or more large data.frames you want to use inside your application, and with no specific update of these data, an SQL back-end can be the perfect choice</strong>.
+On the other hand, a NoSQL database like MongoDB will be faster when it comes to doing write operations, and can store any kind of object: for example, <a href="https://github.com/colinfay/hexmake">hexmake</a> can use a MongoDB back-end to store RDS files.
+But that comes with a price: read calls are a little bit slower, and you might have to work a little bit more on handling the JSON results that come out of MongoDB.
+Another example of an app that uses on an external database is <code>{databasedemo}</code>, available at <a href="https://engineering-shiny.org/databasedemo/">engineering-shiny.org/databasedemo/</a>.
+Feel free to follow this link for more information about this application!</p>
+<p>Covering all the available types of databases and the packages associated with each is a very, very large topic: there are dozens of database systems, and as many (if not more) packages to interact with them.
+For more extensive coverage of using databases in R, please follow these resources:</p>
+<ul>
+<li><p><a href="https://db.rstudio.com/">Databases using R</a>, the official RStudio documentation around databases and R.</p></li>
+<li><p><a href="https://colinfay.me/r-db/">colinfay/r-db</a>, a Docker image that bundles the toolchain for a lot of database systems for R.</p></li>
+<li><p><a href="https://cran.r-project.org/web/views/Databases.html">CRAN Task View: Databases with R</a>: the official task view from CRAN with a series of packages for database manipulation</p></li>
+</ul>
+</div>
+<div id="data-source-checklist" class="section level3" number="15.3.4">
+<h3>
+<span class="header-section-number">15.3.4</span> Data-source checklist<a class="anchor" aria-label="anchor" href="#data-source-checklist"><i class="fas fa-link"></i></a>
+</h3>
+<p>How to choose between these three methodologies:</p>
+<div class="inline-table"><table class="table table-sm">
+<thead><tr class="header">
+<th align="left">Choice</th>
+<th align="left">Update</th>
+<th align="left">Size</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Package data</td>
+<td align="left">Never to very rare</td>
+<td align="left">Low to medium</td>
+</tr>
+<tr class="even">
+<td align="left">Reading files</td>
+<td align="left">Uploaded by Users</td>
+<td align="left">Preferably low</td>
+</tr>
+<tr class="odd">
+<td align="left">External DataBase</td>
+<td align="left">Never to Streaming</td>
+<td align="left">Low to Big</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></div>
+<div class="next"><a href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#common-app-caveats"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li>
+<a class="nav-link" href="#reactivity-anti-patterns"><span class="header-section-number">15.1</span> Reactivity anti-patterns</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#reactivity-is-awesome-until-it-is-not"><span class="header-section-number">15.1.1</span> Reactivity is awesome… until it is not</a></li>
+<li><a class="nav-link" href="#observe-vs-observeevent"><span class="header-section-number">15.1.2</span> observe vs observeEvent</a></li>
+<li><a class="nav-link" href="#building-triggers-and-watchers"><span class="header-section-number">15.1.3</span> Building triggers and watchers</a></li>
+<li><a class="nav-link" href="#using-r6-as-data-storage"><span class="header-section-number">15.1.4</span> Using R6 as data storage</a></li>
+<li><a class="nav-link" href="#logging-reactivity-with-whereami"><span class="header-section-number">15.1.5</span> Logging reactivity with {whereami}</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#r-does-too-much"><span class="header-section-number">15.2</span> R does too much</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#rendering-the-ui-from-the-server-side"><span class="header-section-number">15.2.1</span> Rendering the UI from the server side</a></li>
+<li><a class="nav-link" href="#too-much-data-in-memory"><span class="header-section-number">15.2.2</span> Too much data in memory</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#reading-data"><span class="header-section-number">15.3</span> Reading data</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#including-data-in-your-application"><span class="header-section-number">15.3.1</span> Including data in your application</a></li>
+<li><a class="nav-link" href="#reading-external-datasets"><span class="header-section-number">15.3.2</span> Reading external datasets</a></li>
+<li><a class="nav-link" href="#using-external-databases"><span class="header-section-number">15.3.3</span> Using external databases</a></li>
+<li><a class="nav-link" href="#data-source-checklist"><span class="header-section-number">15.3.4</span> Data-source checklist</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/15-common-app-caveats.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/15-common-app-caveats.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

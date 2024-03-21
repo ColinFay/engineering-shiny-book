@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 11 Build Yourself a Safety Net | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="Don’t fuck over Future You JD (https://twitter.com/CMastication) Strengthening your app means two things: testing and locking the application environment.  11.1 Testing your app The process of...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 11 Build Yourself a Safety Net | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="Don’t fuck over Future You JD (https://twitter.com/CMastication) Strengthening your app means two things: testing and locking the application environment.  11.1 Testing your app The process of...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 11 Build Yourself a Safety Net | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="Don’t fuck over Future You JD (https://twitter.com/CMastication) Strengthening your app means two things: testing and locking the application environment.  11.1 Testing your app The process of...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="active" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="build-yourself-safety-net" class="section level1" number="11">
+<h1>
+<span class="header-section-number">11</span> Build Yourself a Safety Net<a class="anchor" aria-label="anchor" href="#build-yourself-safety-net"><i class="fas fa-link"></i></a>
+</h1>
+<blockquote>
+<p>Don’t fuck over Future You</p>
+<p><em>JD</em> (<a href="https://twitter.com/CMastication" class="uri">https://twitter.com/CMastication</a>)</p>
+</blockquote>
+<p>Strengthening your app means two things: testing and locking the application environment.</p>
+<div id="testing-your-app" class="section level2" number="11.1">
+<h2>
+<span class="header-section-number">11.1</span> Testing your app<a class="anchor" aria-label="anchor" href="#testing-your-app"><i class="fas fa-link"></i></a>
+</h2>
+<p>The process of getting your application production-ready implies that the application is tested.
+With a robust testing suite, you will develop, maintain, and improve in a safe environment and ensure your project sustainability.
+What will you be testing?
+Both sides of the application: the business logic and the user interface.
+And also, the application load, i.e. how much time and memory are required when your application starts being used by a significant number of users, be it from the user perspective (how long does it take to complete a full scenario) and from the server perspective (how much memory is needed for my app to run).</p>
+<div id="testing-the-business-logic" class="section level3" number="11.1.1">
+<h3>
+<span class="header-section-number">11.1.1</span> Testing the business logic<a class="anchor" aria-label="anchor" href="#testing-the-business-logic"><i class="fas fa-link"></i></a>
+</h3>
+<p>If you have been following the good practices we have listed in previous chapters, your current application has at least these two properties:</p>
+<ul>
+<li>The business-logic functions are separated from your interactive-logic functions.</li>
+<li>Your application is inside a package.</li>
+</ul>
+<p>On top of being a sane organization approach, <strong>using this separation inside a package structure allows you to leverage all the tooling that has been built for testing “standard” packages</strong>.</p>
+<p>R developers have been developing packages for a long time, and at the time of writing these lines (April 2020), more than 15,000 packages are available on CRAN.
+To sustain these developments, a lot of tools have been created to secure the development process, and especially tools for creating unit tests for your package.</p>
+<p>Unit tests are a general concept in software engineering that describes the process of writing a form of assessment to check the validity of your code.
+A simplified explanation is that if you write a function called <code>meaning_of_life</code> that returns <code>42</code>, you will expect this function to always return <code>42</code>, and to be alerted if ever this value changes.
+Using unit tests is a way to secure your work in the future, be it for future you, for your collaborator, or for anybody wanting to collaborate on the project: if anyone comes and change the code behind the <code>meaning_of_life()</code> function, and the result is no longer <code>42</code>, the developer working on this piece of code will be able to catch it.
+The general idea is to detect bugs and breaking changes at the moment they are happening, not once it is too late.</p>
+<p>There are several packages in R that can be used to implement unit testing, and you can even implement your own tests.
+One of the most popular right now <a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;Popularity based on the number of reverse dependencies and suggests, as shown in &lt;a href="https://cran.r-project.org/web/packages/testthat/index.html" class="uri"&gt;https://cran.r-project.org/web/packages/testthat/index.html&lt;/a&gt;.&lt;/p&gt;'><sup>46</sup></a> is <a href="https://testthat.r-lib.org">testthat</a> <span class="citation">(<a href="references.html#ref-R-testthat">Wickham 2023a</a>)</span>.
+This testing framework lets you write a series of tests and expectations, which are then launched when calling <code>test()</code> from <a href="https://devtools.r-lib.org/">devtools</a> <span class="citation">(<a href="references.html#ref-R-devtools">Wickham, Hester, et al. 2022</a>)</span>, either locally or in your CI system.</p>
+<p>Here is an example of testing that the <code>meaning_of_life</code> will always be <code>42</code>.</p>
+<div class="sourceCode" id="cb144"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Creating a testing context, with one expectation</span></span>
+<span><span class="fu">test_that</span><span class="op">(</span><span class="st">"The meaning of life is 42"</span>, <span class="op">{</span></span>
+<span>  <span class="fu">expect_equal</span><span class="op">(</span></span>
+<span>    <span class="fu">meaning_of_life</span><span class="op">(</span><span class="op">)</span>, </span>
+<span>    <span class="fl">42</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<p>Once you have this test skeleton set, you will be able to detect any change to this function.</p>
+<p>If you want to learn more about how to use <a href="https://testthat.r-lib.org">testthat</a>, you can refer to the following resources:</p>
+<ul>
+<li><p><a href="https://testthat.r-lib.org/"><code>{testthat}</code> online documentation</a></p></li>
+<li><p><a href="https://r-pkgs.org/tests.html">R Packages - Chapter 10 Testing</a></p></li>
+<li><p><a href="https://speakerdeck.com/colinfay/building-a-package-that-lasts-erum-2018-workshop?slide=107">Building a package that lasts, eRum 2018 workshop - Part 5: Test and Code Coverage</a></p></li>
+</ul>
+</div>
+<div id="shinytestserver" class="section level3" number="11.1.2">
+<h3>
+<span class="header-section-number">11.1.2</span> <code>shiny::testServer()</code><a class="anchor" aria-label="anchor" href="#shinytestserver"><i class="fas fa-link"></i></a>
+</h3>
+<p>At the time of writing these lines, the <a href="https://shiny.rstudio.com/">shiny</a> team is actively working on a new way to test <a href="https://shiny.rstudio.com/">shiny</a> server functions.
+These features are still a work in progress, and are not available in the stable version of <a href="https://shiny.rstudio.com/">shiny</a> we have used in this book (1.7.4).
+Given that these features are still subject to change, we will not go into detail about these new features, but here is a preview of what it will look like:</p>
+<div class="sourceCode" id="cb145"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Given the following module</span></span>
+<span><span class="va">computation_module_server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">ns</span> <span class="op">&lt;-</span> <span class="va">session</span><span class="op">$</span><span class="va">ns</span></span>
+<span>  <span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/reactiveValues.html">reactiveValues</a></span><span class="op">(</span></span>
+<span>    value <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">selector</span> , <span class="op">{</span></span>
+<span>    <span class="va">r</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="va">input</span><span class="op">$</span><span class="va">selector</span> <span class="op">*</span> <span class="fl">10</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># We can test it that way</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://testthat.r-lib.org">testthat</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/testServer.html">testServer</a></span><span class="op">(</span><span class="va">computation_module_server</span>, <span class="op">{</span></span>
+<span></span>
+<span>  <span class="co"># Give input$selector a value</span></span>
+<span>  <span class="va">session</span><span class="op">$</span><span class="fu">setInputs</span><span class="op">(</span>selector <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="co"># Call {testthat} functions</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/equality-expectations.html">expect_equal</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">value</span>, <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Give input$selector a value</span></span>
+<span>  <span class="va">session</span><span class="op">$</span><span class="fu">setInputs</span><span class="op">(</span>selector <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="co"># Call {testthat} functions</span></span>
+<span>  <span class="fu"><a href="https://testthat.r-lib.org/reference/equality-expectations.html">expect_equal</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">value</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div>
+<p>This methodology is still under development, so we won’t go deeper into this subject, but if you want to follow the update on this topic, please refer to the <a href="https://shiny.rstudio.com/articles/integration-testing.html">Server function testing with Shiny</a> article on the <a href="https://shiny.rstudio.com/">shiny</a> website.</p>
+</div>
+<div id="testing-the-interactive-logic" class="section level3" number="11.1.3">
+<h3>
+<span class="header-section-number">11.1.3</span> Testing the interactive logic<a class="anchor" aria-label="anchor" href="#testing-the-interactive-logic"><i class="fas fa-link"></i></a>
+</h3>
+<p>Once you have built a solid test suite for your business logic, another side of your app you might want to check is the interactive logic, i.e. the user interface.</p>
+<p>There are several tools from the web development world that can be used to do exactly that: mimicking an interactive session where instead of deliberately clicking on the application interface, you let a program do it for you.</p>
+<div id="a.-puppeteer" class="section level4 unnumbered">
+<h4>A. <code>puppeteer</code><a class="anchor" aria-label="anchor" href="#a.-puppeteer"><i class="fas fa-link"></i></a>
+</h4>
+<p><code>puppeteer</code> is a NodeJS module that drives a Google Chrome headless session and mimics a session on the app.</p>
+<p>And good news, there is a Google Chrome extension, called <a href="https://chrome.google.com/webstore/detail/puppeteer-recorder/djeegiggegleadkkbgopoonhjimgehda">Puppeteer Recorder</a>, that allows you to create, while visiting a web page, the <code>pupepeteer</code> script to reproduce your visit.
+Here is, for example, a very small JavaScript script for testing <a href="https://github.com/colinfay/hexmake">hexmake</a> <span class="citation">(<a href="references.html#ref-R-hexmake">Fay 2023g</a>)</span>, generated by this extension.</p>
+<div class="sourceCode" id="cb146"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb146-1"><a href="build-yourself-safety-net.html#cb146-1" tabindex="-1"></a><span class="co">// Require the node module</span></span>
+<span id="cb146-2"><a href="build-yourself-safety-net.html#cb146-2" tabindex="-1"></a><span class="kw">const</span> puppeteer <span class="op">=</span> <span class="pp">require</span>(<span class="st">'puppeteer'</span>)<span class="op">;</span></span>
+<span id="cb146-3"><a href="build-yourself-safety-net.html#cb146-3" tabindex="-1"></a>(<span class="kw">async</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb146-4"><a href="build-yourself-safety-net.html#cb146-4" tabindex="-1"></a><span class="co">// launch puppeteer and connect to the page</span></span>
+<span id="cb146-5"><a href="build-yourself-safety-net.html#cb146-5" tabindex="-1"></a><span class="kw">const</span> browser <span class="op">=</span> <span class="cf">await</span> puppeteer<span class="op">.</span><span class="fu">launch</span>()</span>
+<span id="cb146-6"><a href="build-yourself-safety-net.html#cb146-6" tabindex="-1"></a><span class="kw">const</span> page <span class="op">=</span> <span class="cf">await</span> browser<span class="op">.</span><span class="fu">newPage</span>()</span>
+<span id="cb146-7"><a href="build-yourself-safety-net.html#cb146-7" tabindex="-1"></a><span class="cf">await</span> page<span class="op">.</span><span class="fu">goto</span>(<span class="st">'http://localhost:2811/'</span>)</span>
+<span id="cb146-8"><a href="build-yourself-safety-net.html#cb146-8" tabindex="-1"></a></span>
+<span id="cb146-9"><a href="build-yourself-safety-net.html#cb146-9" tabindex="-1"></a><span class="co">// We're waiting for a DOM element to be ready</span></span>
+<span id="cb146-10"><a href="build-yourself-safety-net.html#cb146-10" tabindex="-1"></a><span class="cf">await</span> page<span class="op">.</span><span class="fu">waitForSelector</span>(<span class="st">'.row &gt; .col &gt; </span><span class="sc">\</span></span>
+<span id="cb146-11"><a href="build-yourself-safety-net.html#cb146-11" tabindex="-1"></a><span class="st">    .rounded &gt; details:nth-child(3) &gt; summary'</span>)</span>
+<span id="cb146-12"><a href="build-yourself-safety-net.html#cb146-12" tabindex="-1"></a>    <span class="co">// Now it's ready, we can click on it</span></span>
+<span id="cb146-13"><a href="build-yourself-safety-net.html#cb146-13" tabindex="-1"></a>    <span class="cf">await</span> page<span class="op">.</span><span class="fu">click</span>(<span class="st">'.row &gt; .col &gt; .rounded &gt; </span><span class="sc">\</span></span>
+<span id="cb146-14"><a href="build-yourself-safety-net.html#cb146-14" tabindex="-1"></a><span class="st">    details:nth-child(3) &gt; summary'</span>)</span>
+<span id="cb146-15"><a href="build-yourself-safety-net.html#cb146-15" tabindex="-1"></a>    </span>
+<span id="cb146-16"><a href="build-yourself-safety-net.html#cb146-16" tabindex="-1"></a>    <span class="co">// Now our test is over, we can close the connection</span></span>
+<span id="cb146-17"><a href="build-yourself-safety-net.html#cb146-17" tabindex="-1"></a>    <span class="cf">await</span> browser<span class="op">.</span><span class="fu">close</span>()</span>
+<span id="cb146-18"><a href="build-yourself-safety-net.html#cb146-18" tabindex="-1"></a>})()</span></code></pre></div>
+<p>Be aware, though, that this extension does not record everything, at least with the version used while writing this book (<code>0.7.1</code>).
+For example, typing inside a text input is not recorded: that is completely doable inside <code>puppeteer</code>, yet not recorded by this extension.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;See &lt;a href="https://github.com/puppeteer/puppeteer/issues/441" class="uri"&gt;https://github.com/puppeteer/puppeteer/issues/441&lt;/a&gt; for the code to set the text input values.&lt;/p&gt;'><sup>47</sup></a></p>
+<p>Once you have this piece of code, put it into a NodeJS script, and replay the session as many time as you need.
+If ever one of the steps cannot be replayed as recorded, the script will fail, notifying you of a regression.</p>
+<p>Several packages in R mimic what <code>puppeteer</code> does (Google Chrome headless orchestration), with notably <a href="https://rlesur.github.io/crrri/">crrri</a> <span class="citation">(<a href="references.html#ref-R-crrri">Lesur and Dervieux 2023</a>)</span> and <a href="https://github.com/rstudio/chromote">chromote</a> <span class="citation">(<a href="references.html#ref-R-chromote">Chang and Schloerke 2023</a>)</span>.
+These packages can be used to launch and manipulate a Google Chrome headless session, meaning that you can programmatically navigate and interact with a web page from R.
+And to do the tests in a <code>puppeteer</code> spirit, you can refer to the <a href="https://github.com/ColinFay/crrry">crrry</a> package <span class="citation">(<a href="references.html#ref-R-crrry">Fay 2023c</a>)</span>, which contains a series of wrapper functions around <a href="https://rlesur.github.io/crrri/">crrri</a>, specifically designed for <a href="https://shiny.rstudio.com/">shiny</a>.</p>
+<p>Here is an example:</p>
+<div class="sourceCode" id="cb147"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Creating a new test instance</span></span>
+<span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">crrry</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/crrry/man/CrrryOnPage.html">CrrryOnPage</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="co"># Using the `find_chrome()` function to guess where the </span></span>
+<span>  <span class="co"># Chrome bin is on our machine</span></span>
+<span>  chrome_bin <span class="op">=</span> <span class="fu">pagedown</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pagedown/man/find_chrome.html">find_chrome</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="co"># Launching Chrome on a random available port on our machine</span></span>
+<span>  <span class="co"># Note that you will need httpuv &gt;= 1.5.2 if you want to use </span></span>
+<span>  <span class="co"># this function</span></span>
+<span>  chrome_port <span class="op">=</span> <span class="fu">httpuv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/httpuv/man/randomPort.html">randomPort</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>  <span class="co"># Specifying the page we want to connect to</span></span>
+<span>  url <span class="op">=</span> <span class="st">"https://connect.thinkr.fr/hexmake/"</span>,</span>
+<span>  <span class="co"># Do everything on the terminal, with no window open</span></span>
+<span>  headless <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code>Running \
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+  --no-first-run --headless 
+  '--user-data-dir=/Users/colin/Library/Application Support/
+    r-crrri/chrome-data-dir-dhutmfux' 
+  '--remote-debugging-port=40698'</code></pre>
+<div class="sourceCode" id="cb149"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We'll wait for the application to be ready to accept inputs</span></span>
+<span><span class="va">test</span><span class="op">$</span><span class="fu">wait_for_shiny_ready</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Shiny is computing
+✓ Shiny is still running</code></pre>
+<p>You can then call one of the <code>test</code> object methods:</p>
+<ul>
+<li>
+<code>call_js()</code>, that allows you to run JavaScript code</li>
+<li>
+<code>shiny_set_input()</code> changes the value of a <a href="https://shiny.rstudio.com/">shiny</a> Input</li>
+<li>
+<code>wait_for()</code> waits for a JavaScript condition to be TRUE</li>
+<li>
+<code>click_on_id</code> clicks on a given id</li>
+</ul>
+<p>Of course, the interesting part is doing “bulk testing” of your application, for example, by setting a series of values to an input:</p>
+<div class="sourceCode" id="cb151"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co"># We'll be setting a series of letters, one by one</span></span>
+<span>  <span class="co"># for the package name input</span></span>
+<span>  <span class="va">test</span><span class="op">$</span><span class="fu">shiny_set_input</span><span class="op">(</span></span>
+<span>    <span class="st">"main_ui_1-left_ui_1-pkg_name_ui_1-package"</span>, </span>
+<span>    <span class="va">i</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<pre><code>-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package--
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running</code></pre>
+<p>And once your test is done, do not forget to close the connection!</p>
+<div class="sourceCode" id="cb153"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Closing the connection</span></span>
+<span><span class="va">test</span><span class="op">$</span><span class="kw">stop</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="b.-monkey-test" class="section level4 unnumbered">
+<h4>B. Monkey test<a class="anchor" aria-label="anchor" href="#b.-monkey-test"><i class="fas fa-link"></i></a>
+</h4>
+<p>If you are working on a user-facing software (i.e. a software used by external users), there is one rule to live by: every unexpected behavior that can happen, will happen.
+In other words, if you develop and think “a user will never do that”, just expect a user to eventually do “that”.</p>
+<p>But how can we get prepared for the unexpected?
+How can we test the “crazy behavior” that user will adopt?
+In web development, there exists a methodology called “Monkey testing”, which consists of <strong>launching a series of random event on a web page: random text in input, scrolling, clicking, zooming… and see if the application crashes or not</strong>.
+This software testing method allows you to test the robustness of the application, by seeing how well it can handle unexpected behaviors.</p>
+<p>Several JavaScript libraries exist when it comes to monkey testing, one of the most popular (and easy to use) libraries is called <a href="https://github.com/marmelab/gremlins.js"><code>gremlin.js</code></a>.
+This library is particularly interesting when it comes to <a href="https://shiny.rstudio.com/">shiny</a> as it does not need external installation: you can add the library as a bookmark on your browser, navigate to the application, and launch the testing (click on the “Generate Bookmarklet” link on the <a href="(https://github.com/marmelab/gremlins.js)">top of the README</a>).
+Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-7">11.1</a> show an example of running gremlins on the prenoms application.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-7"></span>
+<img src="img/gremlins.png" alt="Example of using gremlins.js on the “prenoms” {shiny} application." width="100%"><p class="caption">
+FIGURE 11.1: Example of using <code>gremlins.js</code> on the “prenoms” <a href="https://shiny.rstudio.com/">shiny</a> application.
+</p>
+</div>
+<p>And if you want to scale this, you can also combine it with <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> <span class="citation">(<a href="references.html#ref-R-shinyloadtest">Schloerke, Dipert, and Borges 2021</a>)</span>: launch a session recording, run <code>gremlins</code> one or several time inside the recording, then replay it with multiple sessions.</p>
+<p>With <a href="https://github.com/ColinFay/crrry">crrry</a>, this <code>gremlins</code> test comes for free:</p>
+<div class="sourceCode" id="cb154"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Creating a new test instance</span></span>
+<span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">crrry</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/crrry/man/CrrryOnPage.html">CrrryOnPage</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="co"># Using the `find_chrome()` function to guess where the </span></span>
+<span>  <span class="co"># Chrome bin is on our machine</span></span>
+<span>  chrome_bin <span class="op">=</span> <span class="fu">pagedown</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pagedown/man/find_chrome.html">find_chrome</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="co"># Launching Chrome on a random available port on our machine</span></span>
+<span>  <span class="co"># Note that you will need httpuv &gt;= 1.5.2 if you want to use </span></span>
+<span>  <span class="co"># this function</span></span>
+<span>  chrome_port <span class="op">=</span> <span class="fu">httpuv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/httpuv/man/randomPort.html">randomPort</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>  <span class="co"># Specifying the page we want to connect to</span></span>
+<span>  url <span class="op">=</span> <span class="st">"https://connect.thinkr.fr/hexmake/"</span>,</span>
+<span>  <span class="co"># Do everything on the terminal, with no window open</span></span>
+<span>  headless <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># We'll wait for the application to be ready to accept inputs</span></span>
+<span><span class="va">test</span><span class="op">$</span><span class="fu">wait_for_shiny_ready</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># We launch the horde of gremlins</span></span>
+<span><span class="va">test</span><span class="op">$</span><span class="fu">gremlins_horde</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Sleep, let the gremlins do their job</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co"># Check that the app is still working</span></span>
+<span><span class="va">test</span><span class="op">$</span><span class="fu">wait_for_shiny_ready</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Stop the connection</span></span>
+<span><span class="va">test</span><span class="op">$</span><span class="kw">stop</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="c.-shinytest" class="section level4 unnumbered">
+<h4>C. <code>{shinytest}</code><a class="anchor" aria-label="anchor" href="#c.-shinytest"><i class="fas fa-link"></i></a>
+</h4>
+<p>Finally, if you prefer a <a href="https://shiny.rstudio.com/">shiny</a> specific package, you can go for <a href="https://github.com/rstudio/shinytest">shinytest</a> <span class="citation">(<a href="#ref-R-shinytest"><strong>R-shinytest?</strong></a>)</span>.
+This package, created and maintained by RStudio, <strong>allows you to do a series of screenshots of your application, and then replays your app and compares the previously taken screenshots to the current state of your application</strong>, allowing you to detect any changes in the interface.</p>
+<p>If you are building your application with <a href="https://github.com/ThinkR-open/golem">golem</a> <span class="citation">(<a href="references.html#ref-R-golem">Fay, Guyader, Rochette, et al. 2023</a>)</span>, you will need to add an <code>app.R</code> file at the root of your package, then run <code>shinytest::recordTest()</code>:</p>
+<div class="sourceCode" id="cb155"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create an app.R file at the root of the package</span></span>
+<span><span class="fu">golem</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/golem/man/rstudio_deploy.html">add_rstudioconnect_file</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Launch a test, and record a series of </span></span>
+<span><span class="co"># snapshots of your application</span></span>
+<span><span class="fu">shinytest</span><span class="fu">::</span><span class="fu">recordTest</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Once this function is run, a new window opens: it contains your app, and a “Screenshot” button on the right.
+Using this button, you can take various recordings of your shiny application at different states, as shown in Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-10">11.2</a>.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-10"></span>
+<img src="img/shinytest.png" alt="General view of a {shinytest} window." width="100%"><p class="caption">
+FIGURE 11.2: General view of a <a href="https://github.com/rstudio/shinytest">shinytest</a> window.
+</p>
+</div>
+<p>Then, you can do some changes in your app, and run:</p>
+<div class="sourceCode" id="cb156"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">shinytest</span><span class="fu">::</span><span class="fu">testApp</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>If the <a href="https://github.com/rstudio/shinytest">shinytest</a> package detects a visual change in the application, you will be immediately alerted, with a report of the difference from the snapshots you took and the current state of the application.</p>
+</div>
+</div>
+<div id="testing-the-app-load" class="section level3" number="11.1.4">
+<h3>
+<span class="header-section-number">11.1.4</span> Testing the app load<a class="anchor" aria-label="anchor" href="#testing-the-app-load"><i class="fas fa-link"></i></a>
+</h3>
+<div id="a.-shinyloadtest" class="section level4 unnumbered">
+<h4>A. <code>{shinyloadtest}</code><a class="anchor" aria-label="anchor" href="#a.-shinyloadtest"><i class="fas fa-link"></i></a>
+</h4>
+<p><a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> <span class="citation">(<a href="references.html#ref-R-shinyloadtest">Schloerke, Dipert, and Borges 2021</a>)</span> <strong>tests how an application behaves when one, two, three, twenty, one hundred users connect to the app and use it</strong>, and gives you a visual report about the connection and response time of each session.
+The idea with <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> is to first record a session where you mimic a user behavior, then <code>shinycannon</code>, a command line tool that comes with <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a>, replays the recording several times.
+Once the session has been replayed several times mimicking the session you have recorded, you have access to a report of the behavior of your app.</p>
+<div class="sourceCode" id="cb157"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a></span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb158"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Starting your app in another process</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">processx</span><span class="fu">::</span><span class="va"><a href="http://processx.r-lib.org/reference/process.html">process</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  <span class="st">"Rscript"</span>, </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"-e"</span>,  <span class="st">"options('shiny.port'= 2811);hexmake::run_app()"</span> <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># We wait for the app to be ready</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span> </span>
+<span><span class="co"># Check that the process is alive</span></span>
+<span><span class="va">p</span><span class="op">$</span><span class="fu">is_alive</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Open the app in our browser just to be sure</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/browseURL.html">browseURL</a></span><span class="op">(</span><span class="st">"http:://localhost:2811"</span><span class="op">)</span></span></code></pre></div>
+<p>Record the tests, potentially in a new dir:</p>
+<div class="sourceCode" id="cb159"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Creating a directory to receive the logs</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html">dir_create</a></span><span class="op">(</span><span class="st">"shinylogs"</span><span class="op">)</span></span>
+<span><span class="co"># Performing the session recording inside this new folder</span></span>
+<span><span class="fu">withr</span><span class="fu">::</span><span class="fu"><a href="https://withr.r-lib.org/reference/with_dir.html">with_dir</a></span><span class="op">(</span></span>
+<span>  <span class="st">"shinylogs"</span>, <span class="op">{</span></span>
+<span>    <span class="co"># Launch the recording of an app session, using port 1234</span></span>
+<span>    <span class="fu">shinyloadtest</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinyloadtest/reference/record_session.html">record_session</a></span><span class="op">(</span></span>
+<span>      <span class="st">"http://localhost:2811"</span>, </span>
+<span>      port <span class="op">=</span> <span class="fl">1234</span></span>
+<span>    <span class="op">)</span> </span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We now have a series of one or more recording/s inside the <code>shinylogs/</code> folder:</p>
+<p>Then, let’s switch to our command line, and rerun the session with <code>shinycannon</code>.
+The <code>shinycannon</code> command line tools take several arguments: the path the <code>.log</code> file, the URL of the app, <code>--workers</code> specify the number of concurrent connections to run, and the <code>--output-dir</code> argument specifies where the report should be written.</p>
+<p>Then, go to your terminal and run:</p>
+<div class="sourceCode" id="cb160"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb160-1"><a href="build-yourself-safety-net.html#cb160-1" tabindex="-1"></a><span class="ex">shinycannon</span> shinylogs/recording.log <span class="dt">\</span></span>
+<span id="cb160-2"><a href="build-yourself-safety-net.html#cb160-2" tabindex="-1"></a>  http://localhost:2811 <span class="at">--workers</span> 10 <span class="dt">\</span></span>
+<span id="cb160-3"><a href="build-yourself-safety-net.html#cb160-3" tabindex="-1"></a>  <span class="at">--output-dir</span> shinylogs/run1</span></code></pre></div>
+<p>And now, we have new files inside the folder, corresponding to the session recordings.</p>
+<div class="sourceCode" id="cb161"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># printing the structure of shinylogs</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="st">"shinylogs"</span>, recurse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<pre><code>shinylogs
+├── recording.log
+├── run1
+├── run2
+└── run3</code></pre>
+<p>Good news: we do not have to manually analyze these files—<a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> offers a series of wrapper functions to do that.</p>
+<div class="sourceCode" id="cb163"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Bringing the runs in the R session</span></span>
+<span><span class="va">shinyload_runs</span> <span class="op">&lt;-</span> <span class="fu">shinyloadtest</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/shinyloadtest/reference/load_runs.html">load_runs</a></span><span class="op">(</span></span>
+<span>  <span class="st">"5 workers"</span> <span class="op">=</span> <span class="st">"shinylogs/run1"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>We now have a data.frame that looks like this:</p>
+<div class="sourceCode" id="cb164"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">shinyload_runs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Rows: 6
+Columns: 13
+$ run               &lt;ord&gt; 5 workers, 5 workers, 5 wor…
+$ user_id           &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ session_id        &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ iteration         &lt;int&gt; 0, 0, 0, 0, 0, 0
+$ input_line_number &lt;int&gt; 4, 5, 6, 7, 8, 9
+$ event             &lt;chr&gt; "REQ_HOME", "WS_OPEN", "WS_…
+$ start             &lt;dbl&gt; 0.000, 0.462, 0.539, 1.024,…
+$ end               &lt;dbl&gt; 0.461, 0.539, 0.542, 1.024,…
+$ time              &lt;dbl&gt; 0.461, 0.077, 0.003, 0.000,…
+$ concurrency       &lt;dbl&gt; 0, 1, 1, 1, 1, 1
+$ maintenance       &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRU…
+$ label             &lt;ord&gt; "Event 1) Get: Homepage", "…
+$ json              &lt;list&gt; ["REQ_HOME", 2020-04-10 12:…</code></pre>
+<p>Then, <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> comes with a series of plotting functions that can be used to analyze your recording.
+For example:</p>
+<ul>
+<li>
+<code><a href="https://rstudio.github.io/shinyloadtest/reference/slt_plot.html">slt_session_duration()</a></code> plots the session duration, with the various types of events that take computation time: JS and CSS load, R computation, etc.
+The output is available in Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-21">11.3</a>.</li>
+</ul>
+<div class="sourceCode" id="cb166"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rstudio.github.io/shinyloadtest/reference/slt_plot.html">slt_session_duration</a></span><span class="op">(</span><span class="va">shinyload_runs</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-21"></span>
+<img src="engineering-production-grade-shiny-apps_files/figure-html/11-step-by-step-secure-21-1.png" alt="Session duration." width="100%"><p class="caption">
+FIGURE 11.3: Session duration.
+</p>
+</div>
+<!-- + `slt_waterfall()` plots the waterfall graph of session durations, ordered by events.  -->
+<!-- (ref:waterfall) Waterfall graph of session durations -->
+<!-- ```{r 12-step-by-step-secure-20, fig.cap="(ref:waterfall)", out.width="100%", out.height="100%"} -->
+<!-- slt_waterfall(shinyload_runs) -->
+<!-- ``` -->
+<p>And if you need to bundle everything into an HTML reports, <code><a href="https://rstudio.github.io/shinyloadtest/reference/shinyloadtest_report.html">shinyloadtest_report()</a></code> is what you are looking for.</p>
+<div class="sourceCode" id="cb167"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Generating the report</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/shinyloadtest/reference/shinyloadtest_report.html">shinyloadtest_report</a></span><span class="op">(</span><span class="va">shinyload_runs</span><span class="op">)</span></span></code></pre></div>
+<p>This function will generate an HTML report of all the things computed by <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a>, as shown in Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-23">11.4</a>.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-23"></span>
+<img src="img/shinyloadtestreport.png" alt="Webpage generated by shinyloadtest_report()." width="100%"><p class="caption">
+FIGURE 11.4: Webpage generated by <code><a href="https://rstudio.github.io/shinyloadtest/reference/shinyloadtest_report.html">shinyloadtest_report()</a></code>.
+</p>
+</div>
+<p>To sum up with a step-by-step guide:</p>
+<ul>
+<li><p>If the shiny app is only available locally, on your machine, then launch a process with <a href="https://processx.r-lib.org">processx</a> <span class="citation">(<a href="references.html#ref-R-processx">Csárdi and Chang 2022</a>)</span>, or in another R session, that launches the application.
+You can either set the port with <code>options('shiny.port'= 2811)</code>, or let shiny decide for you.
+Be sure that the process is running.
+If the app is online, use the online URL (and make sure you have access to the app).</p></li>
+<li><p>Run <code>shinyloadtest::record_session(url)</code>.
+You should probably set a different port for <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a>, so that it does not try to connect on port 80.</p></li>
+<li><p>Play around with your app; record a scenario of usage.</p></li>
+<li><p>Close the tab where the app is running.</p></li>
+<li><p>Return to your terminal, and run the <code>shinycannon</code> command line tool.</p></li>
+<li><p>Wait for the process to be finished.</p></li>
+<li><p>Go back to R, and then you can analyze the data from the recordings, either manually or by generating the HTML report.</p></li>
+</ul>
+</div>
+<div id="b.-shinyloadtest-crrry-and-dockerstats" class="section level4 unnumbered">
+<h4>B. <code>{shinyloadtest}</code>, <code>{crrry}</code>, and <code>{dockerstats}</code><a class="anchor" aria-label="anchor" href="#b.-shinyloadtest-crrry-and-dockerstats"><i class="fas fa-link"></i></a>
+</h4>
+<p>Another thing you might want to monitor is the memory/CPU usage of your application, which <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> does not natively provide: the package records the load from the browser point of view, not from the server one.
+That’s where <a href="https://github.com/ColinFay/dockerstats">dockerstats</a> <span class="citation">(<a href="references.html#ref-R-dockerstats">Fay 2023d</a>)</span> can come into play: this package is a wrapper around the command line <code>docker stats</code>, and returns an R data.frame with the stats.</p>
+<p>You can get the <a href="https://github.com/ColinFay/dockerstats">dockerstats</a> package from GitHub with:</p>
+<div class="sourceCode" id="cb168"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ColinFay/dockerstats"</span><span class="op">)</span></span></code></pre></div>
+<p>Or from NPM via:</p>
+<div class="sourceCode" id="cb169"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb169-1"><a href="build-yourself-safety-net.html#cb169-1" tabindex="-1"></a><span class="ex">npm</span> install <span class="at">-g</span> r-dockerstats</span></code></pre></div>
+<div class="sourceCode" id="cb170"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ColinFay/dockerstats">dockerstats</a></span><span class="op">)</span></span></code></pre></div>
+<p>With these stats, we can monitor the load on the app when it is run in a Docker container.</p>
+<p>We will start by launching the container using a <code><a href="https://rdrr.io/r/base/system.html">system()</a></code> call: here, we are running the <a href="https://github.com/colinfay/hexmake">hexmake</a> application, bundled in the <code>colinfay/hexmake</code> Docker image, on port 2811.
+We also make sure we give it a name with <code>--name</code>, so that we can call it in our <code><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats.html">dockerstats()</a></code> call later on.</p>
+<div class="sourceCode" id="cb171"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We are launching the docker container </span></span>
+<span><span class="co"># using R system() command. Here, we are </span></span>
+<span><span class="co"># running the container image called </span></span>
+<span><span class="co"># colinfay/hexmake. We are naming the </span></span>
+<span><span class="co"># container hexmake using the --name flag, </span></span>
+<span><span class="co"># --rm means the container will be removed </span></span>
+<span><span class="co"># when stopped, and finally the -p flag defines </span></span>
+<span><span class="co"># how to bind the ports of the container</span></span>
+<span><span class="co"># with the ports of the host (left is the host,</span></span>
+<span><span class="co">#  right is the container): in other word, here, </span></span>
+<span><span class="co">#  we bind port 80 of our container to the port 2811</span></span>
+<span><span class="co"># of our machine.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span><span class="op">(</span></span>
+<span>  <span class="st">"docker run --name hexmake --rm -p 2811:80 colinfay/hexmake"</span>, </span>
+<span>  wait <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Let’s say now we want the stats for the hexmake container:</p>
+<div class="sourceCode" id="cb172"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Waiting for the container to be ready </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">30</span><span class="op">)</span></span>
+<span><span class="co"># Showing the docker stats for hexmake</span></span>
+<span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats.html">dockerstats</a></span><span class="op">(</span><span class="st">"hexmake"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code># A tibble: 1 × 14
+  Container Name    ID        CPUPerc MemUsage MemLimit
+  &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;   
+1 hexmake   hexmake 34cc1544…    0.37 108.5MiB 5.807GiB
+# ℹ 8 more variables: MemPerc &lt;dbl&gt;, NetI &lt;chr&gt;,
+#   NetO &lt;chr&gt;, BlockI &lt;chr&gt;, BlockO &lt;chr&gt;,
+#   PIDs &lt;int&gt;, record_time &lt;chr&gt;, extra &lt;chr&gt;</code></pre>
+<p>Of course, right now nobody is using the app, so the usage can be pretty small.
+But let’s push it a little bit by mimicking a lot of connections.</p>
+<p>To do that, we can replay our <code>shinycannon</code> call, and at the same time use the <code><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats_recurse.html">dockerstats_recurse()</a></code> function, which will recursively call <code><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats.html">dockerstats()</a></code> on a regular interval.</p>
+<div class="sourceCode" id="cb174"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb174-1"><a href="build-yourself-safety-net.html#cb174-1" tabindex="-1"></a><span class="co"># Replaying the recording</span></span>
+<span id="cb174-2"><a href="build-yourself-safety-net.html#cb174-2" tabindex="-1"></a><span class="ex">shinycannon</span> shinylogs/recording.log <span class="dt">\ </span></span>
+<span id="cb174-3"><a href="build-yourself-safety-net.html#cb174-3" tabindex="-1"></a><span class="co"># Specificying the host url and the number of "visitors"</span></span>
+<span id="cb174-4"><a href="build-yourself-safety-net.html#cb174-4" tabindex="-1"></a>  <span class="ex">http://localhost:2811</span> <span class="at">--workers</span> 10 <span class="dt">\</span></span>
+<span id="cb174-5"><a href="build-yourself-safety-net.html#cb174-5" tabindex="-1"></a># Define where the recording will be outputed</span>
+<span id="cb174-6"><a href="build-yourself-safety-net.html#cb174-6" tabindex="-1"></a>  <span class="ex">--output-dir</span> shinylogs/run3</span></code></pre></div>
+<p>Let’s launch at the same time a <code><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats_recurse.html">dockerstats_recurse()</a></code>.
+For example, here, we will print, on each loop, the <code>MemUsage</code> of the container, then save the data inside a <code>dockerstats.csv</code> file.</p>
+<div class="sourceCode" id="cb175"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Calling recursive the dockerstats function. </span></span>
+<span><span class="co"># The callback function takes a function, and define</span></span>
+<span><span class="co"># what to do with the data.frame each time the </span></span>
+<span><span class="co"># dockerstats results are computed.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats_recurse.html">dockerstats_recurse</a></span><span class="op">(</span></span>
+<span>  <span class="st">"hexmake"</span>,</span>
+<span>  <span class="co"># append_csv is a {dockerstats} function that will </span></span>
+<span>  <span class="co"># apped the output to a given csv</span></span>
+<span>  callback <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/csv.html">append_csv</a></span><span class="op">(</span></span>
+<span>    file <span class="op">=</span> <span class="st">"shinylogs/dockerstats.csv"</span>, </span>
+<span>    print <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-31">11.5</a> shows these processes side to side.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-31"></span>
+<img src="img/hexmake-dockerstats.png" alt="{dockerstats} and shinycannon running side-by-side at the same time." width="100%"><p class="caption">
+FIGURE 11.5: <a href="https://github.com/ColinFay/dockerstats">dockerstats</a> and <code>shinycannon</code> running side-by-side at the same time.
+</p>
+</div>
+<p>As you can see, as the number of connections grow, the memory usage grows.
+And we now have a csv with the evolution of the <code>docker stats</code> records over time!</p>
+<div class="sourceCode" id="cb176"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># read_appended_csv() allows to read a csv that has been </span></span>
+<span><span class="co"># constructed with the append_csv() function</span></span>
+<span><span class="va">docker_stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/csv.html">read_appended_csv</a></span><span class="op">(</span></span>
+<span>  <span class="st">"shinylogs/dockerstats.csv"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb177"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">docker_stats</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Rows: 6
+Columns: 14
+$ Container   &lt;chr&gt; "hexmake", "hexmake", "hexmake", …
+$ Name        &lt;chr&gt; "hexmake", "hexmake", "hexmake", …
+$ ID          &lt;chr&gt; "b5d337941e310cbf4708b95a9cc75560…
+$ CPUPerc     &lt;dbl&gt; 0.09, 15.07, 38.58, 54.94, 20.28,…
+$ MemUsage    &lt;chr&gt; "110.9MiB", "117.2MiB", "168.3MiB…
+$ MemLimit    &lt;chr&gt; "1.943GiB", "1.943GiB", "1.943GiB…
+$ MemPerc     &lt;dbl&gt; 5.57, 5.89, 8.46, 8.73, 8.74, 8.89
+$ NetI        &lt;chr&gt; "586B", "8.37kB", "31.6kB", "62.1…
+$ NetO        &lt;chr&gt; "0B", "433kB", "1.18MB", "2.48MB"…
+$ BlockI      &lt;chr&gt; "0B", "0B", "0B", "0B", "0B", "0B"
+$ BlockO      &lt;chr&gt; "0B", "0B", "0B", "0B", "0B", "0B"
+$ PIDs        &lt;int&gt; 3, 4, 4, 4, 4, 4
+$ record_time &lt;dttm&gt; 2020-04-10 10:39:20, 2020-04-10 1…
+$ extra       &lt;lgl&gt; NA, NA, NA, NA, NA, NA</code></pre>
+<p>If you need a deeper look into the connection between application actions and the Docker stats, you can also combine <a href="https://github.com/ColinFay/dockerstats">dockerstats</a> with <a href="https://github.com/ColinFay/crrry">crrry</a>, the idea being that you can record the CPU usage at the exact moment the application performs a specific computation.</p>
+<p>Let’s record the computation of the <code>hexmake</code> container containing the same app as before.</p>
+<p>First, launch the container:</p>
+<div class="sourceCode" id="cb179"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Launching the container a second time, </span></span>
+<span><span class="co"># but name it xmk2 and serve it on port 2708</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span><span class="op">(</span></span>
+<span>  <span class="st">"docker run -p 2708:80 --rm --name xmk2 -d colinfay/hexmake"</span>, </span>
+<span>  wait <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">60</span><span class="op">)</span> <span class="co"># Let the container launch</span></span></code></pre></div>
+<p>Then, a <a href="https://github.com/ColinFay/crrry">crrry</a> job:</p>
+<div class="sourceCode" id="cb180"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># See previous version of this code for a commented explanation </span></span>
+<span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">crrry</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/crrry/man/CrrryOnPage.html">CrrryOnPage</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  chrome_bin <span class="op">=</span> <span class="fu">pagedown</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/pagedown/man/find_chrome.html">find_chrome</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  chrome_port <span class="op">=</span> <span class="fu">httpuv</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/httpuv/man/randomPort.html">randomPort</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  url <span class="op">=</span><span class="st">"http://localhost:2708"</span>,</span>
+<span>  headless <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code>Running '/Applications/Google 
+  Chrome.app/Contents/MacOS/Google Chrome' 
+  --no-first-run --headless \
+  '--user-data-dir=/Users/colin/Library/Application     
+  Support/r-crrri/chrome-data-dir-thyhpptv' \
+  '--remote-debugging-port=48938'</code></pre>
+<div class="sourceCode" id="cb182"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">test</span><span class="op">$</span><span class="fu">wait_for_shiny_ready</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>Shiny is computing
+✓ Shiny is still running</code></pre>
+<div class="sourceCode" id="cb184"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We are creating a first data.frame that records the launch </span></span>
+<span><span class="co"># of the container.</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">dockerstats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats.html">dockerstats</a></span><span class="op">(</span><span class="st">"xmk2"</span>, extra <span class="op">=</span> <span class="st">"launch"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co"># We will be setting a letter for the package name input</span></span>
+<span>  <span class="va">test</span><span class="op">$</span><span class="fu">shiny_set_input</span><span class="op">(</span></span>
+<span>    <span class="st">"main_ui_1-left_ui_1-pkg_name_ui_1-package"</span>, </span>
+<span>    <span class="va">i</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="co"># Once the input is set, we call dockerstats() </span></span>
+<span>  <span class="co"># for this container and bind the results to </span></span>
+<span>  <span class="co"># the previously created data.frame</span></span>
+<span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span></span>
+<span>    <span class="va">results</span>, </span>
+<span>    <span class="fu">dockerstats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/dockerstats.html">dockerstats</a></span><span class="op">(</span><span class="st">"xmk2"</span>, extra <span class="op">=</span> <span class="va">i</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<pre><code>-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running
+-- Setting id main_ui_1-left_ui_1-pkg_name_ui_1-package --
+Shiny is computing
+✓ Shiny is still running</code></pre>
+<p>And draw a small graph of this evolution, shown in Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-43">11.6</a>:</p>
+
+<div class="sourceCode" id="cb186"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># We are converting the MemUsage and record_time columns </span></span>
+<span><span class="co"># to a format that can be used in {ggplot2}</span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="va">results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    MemUsage <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dockerstats/man/byte-conversion.html">to_mib</a></span><span class="op">(</span><span class="va">MemUsage</span><span class="op">)</span>, </span>
+<span>    record_time <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="va">record_time</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="co"># Using the record time as an x axis, </span></span>
+<span><span class="co"># then adding the MemUsage as a line (to watch the </span></span>
+<span><span class="co"># evolution over time), then we add the 'extra' column, </span></span>
+<span><span class="co"># that contains the letters, as vertical lines + as </span></span>
+<span><span class="co"># label</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">results</span>, </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">record_time</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">MemUsage</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">record_time</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html">geom_label</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span></span>
+<span>      y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">MemUsage</span><span class="op">)</span>, </span>
+<span>      label <span class="op">=</span> <span class="va">extra</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"MemUsage of 10 inputs for package name"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-43"></span>
+<img src="engineering-production-grade-shiny-apps_files/figure-html/11-step-by-step-secure-43-1.png" alt="Plot of the {dockerstats} evolution." width="672"><p class="caption">
+FIGURE 11.6: Plot of the <a href="https://github.com/ColinFay/dockerstats">dockerstats</a> evolution.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="a-reproducible-environment" class="section level2" number="11.2">
+<h2>
+<span class="header-section-number">11.2</span> A reproducible environment<a class="anchor" aria-label="anchor" href="#a-reproducible-environment"><i class="fas fa-link"></i></a>
+</h2>
+<p>One of the challenges of building an app that needs to be sent to production is that you will need to work in a reproducible environment.
+What does this mean?
+<strong>When building a production application, you are building a piece of software that will be launched on another computer, be it a server in the cloud or someone else’s computer</strong>.
+Once your app is built, there are few chances that you will launch it on your own computer and that external users will connect to your computer.
+You will either give your users a package (which will be the simplest way to share it: bundle the packaged app to a <code>tar.gz</code>, then let people install it either manually or from a package repository), or a URL where they can connect and use your app.</p>
+<p>If you follow the <a href="https://github.com/ThinkR-open/golem">golem</a> workflow and all the good practices for a solid package, the application you have built should be deployable on another computer that has R.
+In that second case, <strong>you will have to think about how you can create your app in a reproducible environment</strong>: in other words, be sure that the app is deployed under the same configuration as your local application—R version, package versions, system requirements, environment variables, etc.</p>
+<p>To help you achieve that, we will introduce two tools in the next section: <a href="https://rstudio.github.io/renv/">renv</a> <span class="citation">(<a href="references.html#ref-R-renv">Ushey 2020</a>)</span> and <a href="https://www.docker.com/">Docker</a>.</p>
+<div id="renv" class="section level3" number="11.2.1">
+<h3>
+<span class="header-section-number">11.2.1</span> <code>{renv}</code><a class="anchor" aria-label="anchor" href="#renv"><i class="fas fa-link"></i></a>
+</h3>
+<div id="a.-about-renv" class="section level4 unnumbered">
+<h4>A. About <code>{renv}</code><a class="anchor" aria-label="anchor" href="#a.-about-renv"><i class="fas fa-link"></i></a>
+</h4>
+<p>How do we make sure the package versions we have installed on our machine stay the same in the production environment?
+And also, how can we be sure that, working as a team, we will be able to work together using the same package versions?</p>
+<p>From one package version to another, functions and behaviors change.
+Most of the time, a new version means new functions and new features.
+But from time to time, a new version means breaking change<strong>s. Monitoring these changes and how they potentially break our code is a hard task: because checking versions of packages on various machines can take time</strong>, or because debugging these bugs in your application logs is not straightforward.
+And of course, the moment when we discover the error might not be the perfect time for us, as we might not have enough free time on our calendar to debug the application that has stopped running.</p>
+<p>Let’s take, for example, this traceback from the logs of an application we sent one day on a <code>Shiny Server</code>:</p>
+<div class="sourceCode" id="cb187"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb187-1"><a href="build-yourself-safety-net.html#cb187-1" tabindex="-1"></a><span class="ex">root@westeros-vm:/var/log/shiny-server#</span> cat thewall<span class="er">(</span><span class="ex">...</span><span class="kw">)</span><span class="ex">.log</span></span>
+<span id="cb187-2"><a href="build-yourself-safety-net.html#cb187-2" tabindex="-1"></a><span class="ex">***</span> caught segfault <span class="pp">***</span></span>
+<span id="cb187-3"><a href="build-yourself-safety-net.html#cb187-3" tabindex="-1"></a><span class="ex">[...]</span></span>
+<span id="cb187-4"><a href="build-yourself-safety-net.html#cb187-4" tabindex="-1"></a><span class="ex">address</span> 0x5100004d, cause <span class="st">'memory not mapped'</span></span>
+<span id="cb187-5"><a href="build-yourself-safety-net.html#cb187-5" tabindex="-1"></a></span>
+<span id="cb187-6"><a href="build-yourself-safety-net.html#cb187-6" tabindex="-1"></a><span class="ex">Traceback:</span></span>
+<span id="cb187-7"><a href="build-yourself-safety-net.html#cb187-7" tabindex="-1"></a><span class="ex">1:</span> rcpp_sf_to_geojson<span class="er">(</span><span class="ex">sf,</span> digits, factors_as_string<span class="kw">)</span></span>
+<span id="cb187-8"><a href="build-yourself-safety-net.html#cb187-8" tabindex="-1"></a><span class="ex">2:</span> sf_geojson.sf<span class="er">(</span><span class="ex">data</span><span class="kw">)</span></span>
+<span id="cb187-9"><a href="build-yourself-safety-net.html#cb187-9" tabindex="-1"></a><span class="ex">3:</span> geojsonsf::sf_geojson<span class="er">(</span><span class="ex">data</span><span class="kw">)</span></span>
+<span id="cb187-10"><a href="build-yourself-safety-net.html#cb187-10" tabindex="-1"></a><span class="ex">4:</span> addGlifyPolygons<span class="er">(</span><span class="bu">.</span>, data = pol_V1, color = les_couleurs, </span>
+<span id="cb187-11"><a href="build-yourself-safety-net.html#cb187-11" tabindex="-1"></a><span class="ex">popup</span> = <span class="st">"val"</span>, opacity = 1<span class="kw">)</span></span>
+<span id="cb187-12"><a href="build-yourself-safety-net.html#cb187-12" tabindex="-1"></a><span class="ex">5:</span> function_list[<span class="pp">[</span><span class="ss">i</span><span class="pp">]</span>]<span class="er">(</span><span class="ex">value</span><span class="kw">)</span></span>
+<span id="cb187-13"><a href="build-yourself-safety-net.html#cb187-13" tabindex="-1"></a><span class="ex">6:</span> freduce<span class="er">(</span><span class="ex">value,</span> <span class="kw">`</span><span class="ex">_function_list</span><span class="kw">`)</span></span>
+<span id="cb187-14"><a href="build-yourself-safety-net.html#cb187-14" tabindex="-1"></a><span class="ex">7:</span> <span class="kw">`</span><span class="ex">_fseq</span><span class="kw">`</span><span class="er">(</span><span class="kw">`</span><span class="ex">_lhs</span><span class="kw">`)</span></span>
+<span id="cb187-15"><a href="build-yourself-safety-net.html#cb187-15" tabindex="-1"></a><span class="ex">8:</span> eval<span class="er">(</span><span class="ex">quote</span><span class="er">(</span><span class="kw">`</span><span class="ex">_fseq</span><span class="kw">`</span><span class="er">(</span><span class="kw">`</span><span class="ex">_lhs</span><span class="kw">`))</span><span class="ex">,</span> env, env<span class="kw">)</span></span>
+<span id="cb187-16"><a href="build-yourself-safety-net.html#cb187-16" tabindex="-1"></a><span class="ex">[...]</span></span>
+<span id="cb187-17"><a href="build-yourself-safety-net.html#cb187-17" tabindex="-1"></a><span class="ex">105:</span> captureStackTraces<span class="er">(</span><span class="kw">{</span></span>
+<span id="cb187-18"><a href="build-yourself-safety-net.html#cb187-18" tabindex="-1"></a><span class="cf">while</span> <span class="kw">(</span><span class="ex">!.globals</span><span class="va">$stopped</span><span class="kw">)</span> <span class="kw">{</span></span>
+<span id="cb187-19"><a href="build-yourself-safety-net.html#cb187-19" tabindex="-1"></a><span class="ex">..stacktracefloor..</span><span class="er">(</span><span class="fu">serviceApp()</span><span class="kw">)</span></span>
+<span id="cb187-20"><a href="build-yourself-safety-net.html#cb187-20" tabindex="-1"></a><span class="ex">Sys.sleep</span><span class="er">(</span><span class="ex">0.001</span><span class="kw">)</span>    <span class="ex">}}</span><span class="er">)</span></span>
+<span id="cb187-21"><a href="build-yourself-safety-net.html#cb187-21" tabindex="-1"></a><span class="ex">106:</span> ..stacktraceoff..<span class="er">(</span><span class="ex">captureStackTraces</span><span class="er">(</span><span class="kw">{</span></span>
+<span id="cb187-22"><a href="build-yourself-safety-net.html#cb187-22" tabindex="-1"></a><span class="cf">while</span> <span class="kw">(</span><span class="ex">!.globals</span><span class="va">$stopped</span><span class="kw">)</span> <span class="kw">{</span>                </span>
+<span id="cb187-23"><a href="build-yourself-safety-net.html#cb187-23" tabindex="-1"></a><span class="ex">..stacktracefloor..</span><span class="er">(</span><span class="fu">serviceApp()</span><span class="kw">)</span></span>
+<span id="cb187-24"><a href="build-yourself-safety-net.html#cb187-24" tabindex="-1"></a><span class="ex">Sys.sleep</span><span class="er">(</span><span class="ex">0.001</span><span class="kw">)</span>    <span class="ex">}}</span><span class="er">))</span></span>
+<span id="cb187-25"><a href="build-yourself-safety-net.html#cb187-25" tabindex="-1"></a><span class="ex">107:</span> runApp<span class="er">(</span><span class="ex">Sys.getenv</span><span class="er">(</span><span class="st">"SHINY_APP"</span><span class="kw">)</span><span class="ex">,</span> </span>
+<span id="cb187-26"><a href="build-yourself-safety-net.html#cb187-26" tabindex="-1"></a><span class="ex">port</span> = port, </span>
+<span id="cb187-27"><a href="build-yourself-safety-net.html#cb187-27" tabindex="-1"></a><span class="ex">launch.browser</span> = FALSE<span class="kw">)</span></span>
+<span id="cb187-28"><a href="build-yourself-safety-net.html#cb187-28" tabindex="-1"></a><span class="ex">An</span> irrecoverable exception occurred. R is aborting now ...</span></code></pre></div>
+<p>Pretty hard to debug, isn’t it?
+What has actually happened?
+On that specific case, it turned out that the package version from <a href="https://github.com/SymbolixAU/geojsonsf">geojsonsf</a> <span class="citation">(<a href="references.html#ref-R-geojsonsf">Cooley 2022</a>)</span> was <code>1.2.1</code> on our development machine, and the one on the <a href="https://shiny.rstudio.com/">shiny</a> server was updated to <code>1.3.0</code>, and there was a breaking change in the package, as shown in Figure <a href="build-yourself-safety-net.html#fig:11-step-by-step-secure-44">11.7</a>.
+This bug was hard to detect as <a href="https://github.com/SymbolixAU/geojsonsf">geojsonsf</a> was not a direct dependency of our app, but a dependency of one of our dependencies, making it slightly more complex to identify.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:11-step-by-step-secure-44"></span>
+<img src="img/geojson.png" alt="Breaking changes in {geojsonsf}, a dependency of a dependency of our {shiny} application." width="100%"><p class="caption">
+FIGURE 11.7: Breaking changes in <a href="https://github.com/SymbolixAU/geojsonsf">geojsonsf</a>, a dependency of a dependency of our <a href="https://shiny.rstudio.com/">shiny</a> application.
+</p>
+</div>
+<p>The same thing could have happened if working as a team: one of the computers has an old version, when another one has updated to a more recent one.
+How do we prevent that?
+This is where the <a href="https://rstudio.github.io/renv/">renv</a> package comes into play: this package allows you to have a project-based library, instead of a global one.
+In other words, instead of having a library that is global to your machine, <a href="https://rstudio.github.io/renv/">renv</a> allows you to specify packages with fixed versions for a project.
+That means that you can have <a href="https://github.com/SymbolixAU/geojsonsf">geojsonsf</a> version <code>1.2.1</code> in one of your projects, and version <code>1.3.0</code> in another, with the two not conflicting with each other.</p>
+</div>
+<div id="b.-using-renv" class="section level4 unnumbered">
+<h4>B. Using <code>{renv}</code><a class="anchor" aria-label="anchor" href="#b.-using-renv"><i class="fas fa-link"></i></a>
+</h4>
+<blockquote>
+<p>Underlying the philosophy of renv is that any of your existing workflows should just work as they did before.</p>
+<p><em>Introduction to renv</em> (<a href="https://rstudio.github.io/renv/articles/renv.html" class="uri">https://rstudio.github.io/renv/articles/renv.html</a>)</p>
+</blockquote>
+<p>The first thing to do with <a href="https://rstudio.github.io/renv/">renv</a> is initiate it with the <code><a href="https://rstudio.github.io/renv/reference/init.html">init()</a></code> function.</p>
+<div class="sourceCode" id="cb188"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Loading and initiating {renv}</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/renv/">renv</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rstudio.github.io/renv/reference/init.html">init</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>This function does several things:</p>
+<ul>
+<li>Create/modify the <code>.Rprofile</code> file at the root of your project. Here is an example of what this file may look like inside an empty project:</li>
+</ul>
+<pre><code>source("renv/activate.R")</code></pre>
+<p>In this example, there is just one call to a script, one located at <code>renv/activate.R</code>.</p>
+<ul>
+<li>It creates a <code>renv.lock</code> file, which will list all the package dependencies</li>
+</ul>
+<p>As we have initiated an empty project, we do not have any dependencies here.
+If you run this command in a project that already has scripts and dependencies, <a href="https://rstudio.github.io/renv/">renv</a> will try to locate them all, and add them to this file.
+Note that these packages may come from CRAN, Bioconductor, GitHub, GitLab, Bitbucket, and even local repositories.</p>
+<p>The <code>renv/</code> folder contains a series of files that store your settings and the necessary packages, using a structure that mimics a local repository.</p>
+<div class="sourceCode" id="cb190"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Displaying the structure of the folder</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="st">"data-raw/renvinit/"</span>, recurse <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
+<pre><code>data-raw/renvinit/
+├── renv
+│   ├── activate.R
+│   └── settings.dcf
+├── renv.lock
+└── renvinit.Rproj</code></pre>
+<p>We will not go into details on this folder, as it is a rather complex structure and chances are that you will never have to update it by hand.</p>
+<p>With <a href="https://rstudio.github.io/renv/">renv</a>, you can choose to link this “local repository” to a local cache, i.e. a folder which is common to all your projects and stores packages and the different versions you already installed (this is the default behavior) or to store the complete packages inside the project, making it portable.</p>
+<p>When you need a new package, you will have to install it in your local library.
+The fastest way to install new packages in your <a href="https://rstudio.github.io/renv/">renv</a>-powered project is by using the <code>install.packages</code> function, which is shimmed by <a href="https://rstudio.github.io/renv/">renv</a>.
+This shim will search the local cache to see if the package has already been cached, and if it is not, it will install and link it.</p>
+<p>Now, we need to install a new package, for example <a href="https://github.com/ColinFay/attempt">attempt</a> <span class="citation">(<a href="references.html#ref-R-attempt">Fay 2020</a>)</span>:</p>
+<div class="sourceCode" id="cb192"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Installing attempt</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"attempt"</span><span class="op">)</span></span></code></pre></div>
+<p>We will now add a little call to this library:</p>
+<div class="sourceCode" id="cb193"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create a fake script that launches {attempt}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/write.html">write</a></span><span class="op">(</span><span class="st">"library(attempt)"</span>, <span class="st">"script.R"</span><span class="op">)</span></span></code></pre></div>
+<p>Once you want to update your <a href="https://rstudio.github.io/renv/">renv</a> <code>Lockfile</code>, call <code><a href="https://rstudio.github.io/renv/reference/snapshot.html">snapshot()</a></code>.</p>
+<div class="sourceCode" id="cb194"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Snapshoting the current status of the environment</span></span>
+<span><span class="fu">renv</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/renv/reference/snapshot.html">snapshot</a></span><span class="op">(</span>confirm <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<p>Note that if you are building an application as a package, use <code>renv::snapshot(type = "explicit")</code> (need version &gt; <code>0.9.3-99</code>): this will only capture the dependencies listed in the <code>DESCRIPTION</code> file.
+If you don’t specify this <code>type = "explicit"</code>, <a href="https://rstudio.github.io/renv/">renv</a> will go and look for all the packages it can find in your file, and notably in your <code>.Rhistory</code>, meaning that if you one day used a function from <a href="https://dplyr.tidyverse.org">dplyr</a> but your current package doesn’t use it anymore, <a href="https://rstudio.github.io/renv/">renv</a> will include it.</p>
+<pre><code>{
+  "R": {
+    "Version": "3.6.1",
+    "Repositories": [
+      {
+        "Name": "CRAN",
+        "URL": "https://cran.rstudio.com"
+      }
+    ]
+  },
+  "Packages": {
+    "attempt": {
+      "Package": "attempt",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "9aaae25e273927dba4e279caac478baa"
+    },
+    "renv": {
+      "Package": "renv",
+      "Version": "0.9.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "c1a367437d8a8a44bec4b9d4974cb20c"
+    },
+    "rlang": {
+      "Package": "rlang",
+      "Version": "0.4.5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "1cc1b38e4db40ea6eb19ab8080bbed3b"
+    }
+  }
+}</code></pre>
+<p>And now that you have a reproducible <a href="https://rstudio.github.io/renv/">renv</a> library, what is next?
+Of course, if you are either working as a team or deploying to a server, you will have to restore the state of your project, which is now living somewhere else, inside your current project/deployment.
+And to do that, the function to call is <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code>, which will update your local project with the dependencies listed inside your <code>Lockfile</code>.</p>
+<p>To sum up, here are the steps to follow:</p>
+<ul>
+<li>Initiate the project with <code><a href="https://rstudio.github.io/renv/reference/init.html">renv::init()</a></code>.</li>
+<li>Install/remove packages.</li>
+<li>Take a <code><a href="https://rstudio.github.io/renv/reference/snapshot.html">snapshot()</a></code> of the state of your project.</li>
+<li>
+<code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> the state of your project using <code>renv.lock</code>.</li>
+<li>Share <code>.Rprofile</code>, <code>renv.lock</code>, <code>renv/activate.R</code> and <code>renv/settings.dcf</code> files for reproducibility.</li>
+</ul>
+<p>Of course, <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> comes with another superpower: time traveling!
+If you decide to update a package in your project, and realize that this package makes the application crash (e.g., an update to <a href="https://github.com/SymbolixAU/geojsonsf">geojsonsf</a>), you can go back in time to a previous version of your library by calling the <code><a href="https://rstudio.github.io/renv/reference/restore.html">restore()</a></code> function.</p>
+<p>There are more things you can do with <a href="https://rstudio.github.io/renv/">renv</a>.
+If you want to know more, we invite you to refer to the <a href="https://rstudio.github.io/renv">official documentation</a>.</p>
+</div>
+</div>
+<div id="docker" class="section level3" number="11.2.2">
+<h3>
+<span class="header-section-number">11.2.2</span> Docker<a class="anchor" aria-label="anchor" href="#docker"><i class="fas fa-link"></i></a>
+</h3>
+<div id="a.-r-docker-shiny" class="section level4 unnumbered">
+<h4>A. R, Docker, <code>{shiny}</code><a class="anchor" aria-label="anchor" href="#a.-r-docker-shiny"><i class="fas fa-link"></i></a>
+</h4>
+<p>Docker is a program that allows to download, install, create, launch and stop multiple operating systems, called containers, on a machine, which will be called the host.
+This host can be your local computer, or the server where you deploy your application/s.</p>
+<p>Docker was designed for <strong>enclosing software environments inside an image that can later be launched</strong>.
+The general idea is that with Docker, you are defining in a <code>Dockerfile</code> all the “rules” that are used to create a given environment, and then you can use this file (and the linked files, for example the R package containing your app) to <strong>deploy your application on any given server that can run Docker</strong>.
+That way, if the <code>Dockerfile</code> can compile on your machine and if you can run it, it should work everywhere (of course, it is a little bit more complex than that, but you get the idea).</p>
+<p>Why Docker in the context of <a href="https://shiny.rstudio.com/">shiny</a> apps?
+Because Docker allows you to abstract away the complexity of managing multiple versions of R and multiple versions of the same package, or even different versions of the same system requirement.
+For example, let’s take our example with the breaking change in <a href="https://github.com/SymbolixAU/geojsonsf">geojsonsf</a> that we used in the previous section.
+With Docker, we can safely specify a <code>1.2.1</code> version in our image, and changing versions on the server would not have broken our code.</p>
+<p>By using Docker for your deployment, you can build and deploy an application with the very same version of packages and R as the one on your computer.
+And of course, you can change them without breaking the rest of the machine: everything that happens in a container stays in a container.
+That way, if you are building your application with an older version of <a href="https://shiny.rstudio.com/">shiny</a>, <strong>you are sure that sending it to production will not break everything: the version inside the Docker image is the same as the one from your machine</strong>.
+And later, if you update <a href="https://shiny.rstudio.com/">shiny</a> and start a new project, you can deploy your app with another version of the package.
+Same goes for your version of R.</p>
+</div>
+<div id="b.-building-a-dockerfile-for-your-app" class="section level4 unnumbered">
+<h4>B. Building a Dockerfile for your app<a class="anchor" aria-label="anchor" href="#b.-building-a-dockerfile-for-your-app"><i class="fas fa-link"></i></a>
+</h4>
+<p>Good news!
+If you are building your app with <a href="https://github.com/ThinkR-open/golem">golem</a>, the creation of the <code>Dockerfile</code> is just one function away!
+If you have a look at the <code>03_deploy.R</code> file in the <code>dev</code> folder, you will find a series of functions that can create the <code>Dockerfile</code> for your project: either as a generic Docker image, or for <a href="https://shiny.rstudio.com/">shiny</a>Proxy or Heroku.</p>
+<p>For example, to create a <code>Dockerfile</code> for a <a href="https://github.com/ThinkR-open/golem">golem</a> project, you can run the following, from the root of your package:</p>
+<div class="sourceCode" id="cb196"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">golem</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/golem/man/dockerfiles.html">add_dockerfile</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Let’s take some time to understand this file, and detail how we could be building it from scratch.</p>
+<ol style="list-style-type: decimal">
+<li><code>FROM</code></li>
+</ol>
+<pre><code>FROM rocker/r-ver:4.1.0</code></pre>
+<p>This line defines what version of R to use for deploying your application.
+This <code>FROM</code> line is the one that sets an image to start from: you rarely (if ever) build a Docker image from nothing, but instead you use an existing image on top of which you build your own image.
+Here, we choose one of the <a href="https://hub.docker.com/r/rocker/r-ver/">r-ver</a> Docker images, based on the output of:</p>
+<div class="sourceCode" id="cb198"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Version.html">R.Version</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">version.string</span></span></code></pre></div>
+<pre><code>[1] "R version 4.1.0 (2021-05-18)"</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li><code>RUN</code></li>
+</ol>
+<p>The <code>RUN</code> call in the file refers to bash calls that are used to build the image.
+For example, the second line of the <code>Dockerfile</code> installs all the system requirements needed by our application.</p>
+<pre><code>RUN apt-get update &amp;&amp; \
+  apt-get install -y  git-core \
+  libcurl4-openssl-dev libssh2-1-dev \
+  libssl-dev libxml2-dev make \
+  zlib1g-dev &amp;&amp; rm -rf /var/lib/apt/lists/*</code></pre>
+<p>In the subsequent <code>RUN</code> calls, <a href="https://github.com/ThinkR-open/golem">golem</a> chooses to call <code><a href="https://remotes.r-lib.org/reference/install_version.html">remotes::install_version()</a></code> to be sure we install the version of the package that matches the one from your computer.</p>
+<pre><code>RUN Rscript -e \
+'remotes::install_version("xfun",upgrade="never",version="0.19")'</code></pre>
+<p>As you can see, it matches the local version:</p>
+<div class="sourceCode" id="cb202"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"xfun"</span><span class="op">)</span></span></code></pre></div>
+<pre><code>[1] ‘0.19’</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li><code>ADD</code></li>
+</ol>
+<p>This Docker entry takes a folder or a file, and copies it inside the image.
+With <a href="https://github.com/ThinkR-open/golem">golem</a>, we are adding the current project, containing the app, to a folder called <code>/build_zone</code>.</p>
+<pre><code>ADD . /build_zone</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li><code>EXPOSE</code></li>
+</ol>
+<p>This command defines which port of the container will be available from the outside of the container.</p>
+<pre><code>EXPOSE 80</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li><code>CMD</code></li>
+</ol>
+<p>This final command is the one that is launched when you run a container.
+With a <a href="https://shiny.rstudio.com/">shiny</a> app, this command is the one that launches the application.</p>
+<pre><code>CMD R -e \
+ "options('shiny.port'=80,shiny.host='0.0.0.0');golex::run_app()"</code></pre>
+</div>
+<div id="c.-dockerfiler" class="section level4 unnumbered">
+<h4>C. <code>{dockerfiler}</code><a class="anchor" aria-label="anchor" href="#c.-dockerfiler"><i class="fas fa-link"></i></a>
+</h4>
+<p>If you want to do everything from the R command line, the <a href="https://github.com/ThinkR-open/dockerfiler">dockerfiler</a> <span class="citation">(<a href="references.html#ref-R-dockerfiler">Fay, Guyader, Parry, et al. 2023</a>)</span> package is here for you!
+This package allows you to generate a <code>Dockerfile</code> straight from R:</p>
+<div class="sourceCode" id="cb207"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ThinkR-open/dockerfiler">dockerfiler</a></span><span class="op">)</span></span></code></pre></div>
+<pre><code>
+Attaching package: 'dockerfiler'</code></pre>
+<pre><code>The following object is masked from 'package:golem':
+
+    get_sysreqs</code></pre>
+<div class="sourceCode" id="cb210"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Creating a new Dockerfile object</span></span>
+<span><span class="va">my_dock</span> <span class="op">&lt;-</span> <span class="va"><a href="https://rdrr.io/pkg/dockerfiler/man/Dockerfile.html">Dockerfile</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># Adding RUN, ADD, WORKDIR and EXPOSE commands</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">RUN</span><span class="op">(</span><span class="st">"apt-get update &amp;&amp; apt-get install -y git-core"</span><span class="op">)</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">ADD</span><span class="op">(</span><span class="st">"."</span>, <span class="st">"/"</span><span class="op">)</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">RUN</span><span class="op">(</span><span class="st">"mkdir /build_zone"</span><span class="op">)</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">ADD</span><span class="op">(</span><span class="st">"."</span>, <span class="st">"/build_zone"</span><span class="op">)</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">WORKDIR</span><span class="op">(</span><span class="st">"/build_zone"</span><span class="op">)</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">RUN</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dockerfiler/man/r.html">r</a></span><span class="op">(</span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html">install_local</a></span><span class="op">(</span>upgrade<span class="op">=</span><span class="st">"never"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">my_dock</span><span class="op">$</span><span class="fu">EXPOSE</span><span class="op">(</span><span class="fl">80</span><span class="op">)</span></span>
+<span><span class="co"># Viewing the Dockerfile</span></span>
+<span><span class="va">my_dock</span></span></code></pre></div>
+<pre><code>FROM rocker/r-base
+RUN apt-get update &amp;&amp; apt-get install -y git-core
+ADD . /
+RUN mkdir /build_zone
+ADD . /build_zone
+WORKDIR /build_zone
+RUN R -e 'remotes::install_local(upgrade = "never")'
+EXPOSE 80</code></pre>
+</div>
+<div id="d.-docker-and-renv" class="section level4 unnumbered">
+<h4>D. Docker and <code>{renv}</code><a class="anchor" aria-label="anchor" href="#d.-docker-and-renv"><i class="fas fa-link"></i></a>
+</h4>
+<p>If you use <a href="https://rstudio.github.io/renv/">renv</a> to build your <a href="https://shiny.rstudio.com/">shiny</a> application, it can also be used inside your Docker container.
+To make those two tools work together, you will have to copy the files produced by <a href="https://rstudio.github.io/renv/">renv</a> inside the container: <code>.Rprofile</code>, <code>renv.lock</code>, <code>renv/activate.R</code> and <code>renv/settings.dcf</code> files.</p>
+<p>Then run <code><a href="https://rstudio.github.io/renv/reference/restore.html">renv::restore()</a></code> inside your application, instead of using the calls to <code><a href="https://remotes.r-lib.org/reference/install_version.html">remotes::install_version()</a></code> as they are currently implemented when doing it with <a href="https://github.com/ThinkR-open/golem">golem</a>.</p>
+<p>At the time of writing these lines, there is no native support of <a href="https://rstudio.github.io/renv/">renv</a> (with or without Docker) in <a href="https://github.com/ThinkR-open/golem">golem</a>, but that is something we can expect to happen in future versions of <a href="https://github.com/ThinkR-open/golem">golem</a>.</p>
+</div>
+<div id="e.-develop-inside-a-docker-container" class="section level4 unnumbered">
+<h4>E. Develop inside a Docker container<a class="anchor" aria-label="anchor" href="#e.-develop-inside-a-docker-container"><i class="fas fa-link"></i></a>
+</h4>
+<p>Developers have their own R versions and operating systems, which generally differ from the one used on the production server, leading to issues when it comes to deploying the application.</p>
+<p>If you plan on using Docker as a deployment mechanism, you can also use Docker as a local developer environment.
+Thanks to the containers maintained by the <a href="https://www.rocker-project.org/">The Rocker Project</a>, it’s possible to have a local environment that comes close to what you will find on the production server.
+What’s even more interesting is that this project offers images that can contain RStudio server: that means that the application that you will deploy in production can have the very same configuration as the one developers are using on their local machine: thanks to these containers, developers can work on a version of R that matches the one from the production server, using packages that will exactly match the one used in production.</p>
+<p>Even more interesting is using RStudio inside Docker in combination with <a href="https://rstudio.github.io/renv/">renv</a>: the developers work on their machines, inside an IDE they know, and with system requirements (R versions, packages, etc.) that can be reproduced on the production server!</p>
+</div>
+<div id="f.-read-more-about-docker" class="section level4 unnumbered">
+<h4>F. Read more about Docker<a class="anchor" aria-label="anchor" href="#f.-read-more-about-docker"><i class="fas fa-link"></i></a>
+</h4>
+<ul>
+<li><p><a href="https://colinfay.me/docker-r-reproducibility/">An Introduction to Docker for R Users</a></p></li>
+<li><p>An Introduction to Rocker: Docker Containers for R <span class="citation">(<a href="references.html#ref-RJ-2017-065">Boettiger and Eddelbuettel 2017</a>)</span></p></li>
+<li><p>The Rockerverse: Packages and Applications for Containerization with R <span class="citation">(<a href="references.html#ref-rockerverse">Nüst et al. 2020</a>)</span></p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></div>
+<div class="next"><a href="version-control.html"><span class="header-section-number">12</span> Version Control</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#build-yourself-safety-net"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li>
+<a class="nav-link" href="#testing-your-app"><span class="header-section-number">11.1</span> Testing your app</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#testing-the-business-logic"><span class="header-section-number">11.1.1</span> Testing the business logic</a></li>
+<li><a class="nav-link" href="#shinytestserver"><span class="header-section-number">11.1.2</span> shiny::testServer()</a></li>
+<li><a class="nav-link" href="#testing-the-interactive-logic"><span class="header-section-number">11.1.3</span> Testing the interactive logic</a></li>
+<li><a class="nav-link" href="#testing-the-app-load"><span class="header-section-number">11.1.4</span> Testing the app load</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#a-reproducible-environment"><span class="header-section-number">11.2</span> A reproducible environment</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#renv"><span class="header-section-number">11.2.1</span> {renv}</a></li>
+<li><a class="nav-link" href="#docker"><span class="header-section-number">11.2.2</span> Docker</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/11-step-by-step-secure.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/11-step-by-step-secure.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

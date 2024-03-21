@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Introduction | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="A book about engineering shiny application that will later be sent to production. This book cover project management, structuring your project, building a solid testing suite, and optimizing your codebase. We describe in this book a specific workflow: design, prototype, build, strengthen and deploy.">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Introduction | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="A book about engineering shiny application that will later be sent to production. This book cover project management, structuring your project, building a solid testing suite, and optimizing your codebase. We describe in this book a specific workflow: design, prototype, build, strengthen and deploy.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Introduction | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="A book about engineering shiny application that will later be sent to production. This book cover project management, structuring your project, building a solid testing suite, and optimizing your codebase. We describe in this book a specific workflow: design, prototype, build, strengthen and deploy.">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="active" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><!--bookdown:title:end--><!--bookdown:title:start--><div id="introduction" class="section level1 unnumbered">
+<h1>Introduction<a class="anchor" aria-label="anchor" href="#introduction"><i class="fas fa-link"></i></a>
+</h1>
+<p><img src="img/engineering-shiny.jpeg" width="300" align="right" alt="" class="cover"> Welcome to “Engineering Production-Grade Shiny Apps” by <a href="https://colinfay.me/">Colin Fay</a>, <a href="statnmap.com">Sébastien Rochette</a>, <a href="https://rtask.thinkr.fr/consultants-r-experts/vincent-guyader/">Vincent Guyader</a> and <a href="https://rtask.thinkr.fr/consultants-r-experts/cervan-girard">Cervan Girard</a>.</p>
+<p>This book is available in print, published in the <a href="https://www.crcpress.com/go/the-r-series">R Series</a> by Chapman and Hall/CRC.</p>
+<p>You can grab a copy on <a href="https://www.routledge.com/Engineering-Production-Grade-Shiny-Apps/Fay-Rochette-Guyader-Girard/p/book/9780367466022?utm_source=author&amp;utm_medium=shared_link&amp;utm_campaign=B043139_jm1_5ll_6rm_t081_1al_engineeringproduction-gradeshinyappsauthorshare">routledge.com</a>.</p>
+<p>The online version of this book is free to read here (thanks to Chapman &amp; Hall/CRC), and licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.</p>
+<div id="motivation" class="section level2 unnumbered">
+<h2>Motivation<a class="anchor" aria-label="anchor" href="#motivation"><i class="fas fa-link"></i></a>
+</h2>
+<p>This book will not <strong>get you started with <a href="https://shiny.rstudio.com/">shiny</a></strong>, nor <strong>talk how to work with <a href="https://shiny.rstudio.com/">shiny</a> once it is sent to production</strong>.
+What we will be discussing in this book is <strong>the process of building an application that will later be sent to production</strong>.</p>
+<p>Why this topic? Lots of blog posts and books talk about getting started with <a href="https://shiny.rstudio.com/">shiny</a> <span class="citation">(<a href="references.html#ref-R-shiny">Chang et al. 2022</a>)</span> or about what to do once your application is ready to be sent to production.
+Very few (if any) talk about this area in-between: how to confidently work with <a href="https://shiny.rstudio.com/">shiny</a> once you know the basics, and before you send it to production.</p>
+<p>This is what this book is going to talk about: building robust <a href="https://shiny.rstudio.com/">shiny</a> applications that are ready to be sent to production.
+We’ll focus on the process, the workflow, and the necessary tools for building production-grade <a href="https://shiny.rstudio.com/">shiny</a> applications.</p>
+</div>
+<div id="audience-for-this-book" class="section level2 unnumbered">
+<h2>Audience for this book<a class="anchor" aria-label="anchor" href="#audience-for-this-book"><i class="fas fa-link"></i></a>
+</h2>
+<p>If you are starting to read this book, we assume you have a working knowledge of how to build a small application using <a href="https://shiny.rstudio.com/">shiny</a>, and want to know how to go one step further.
+In other words, you already have some knowledge about how <a href="https://shiny.rstudio.com/">shiny</a> works, are able to build a small working application, and want to know how to build a serious, production-grade application that can be sent to production.</p>
+<p>The content of this book oscillates between conceptual discussions (e.g., what is complexity?), exploration of project-management questions (e.g., how do we organize work when building production <a href="https://shiny.rstudio.com/">shiny</a> applications?), and technical topics (e.g. what are <a href="https://shiny.rstudio.com/">shiny</a> modules, or how do I optimize <a href="https://shiny.rstudio.com/">shiny</a>?), with a large portion of the book being dedicated to technical questions.</p>
+<p>This book will then be of interest to two groups:</p>
+<ul>
+<li><p>Team managers who want to help to organize work, and <a href="https://shiny.rstudio.com/">shiny</a> developers who want to learn about project management.
+This group will find relevant content in the first 1/3 of this book (roughly until Chapter <a href="workflow.html#workflow">5</a>).</p></li>
+<li><p>Developers who want to cover medium to advanced <a href="https://shiny.rstudio.com/">shiny</a> topics that will be relevant to production.
+This group will be more interested in the rest of the book, which roughly spans from Chapter <a href="ux-matters.html#ux-matters">6</a> to the end.
+Note that the technical elements covered in this book range from intermediate to advanced topics, and we hope that you will find relevant topics for your current goals, whatever your level is.</p></li>
+</ul>
+<p>In practice, we’ve come to realize that a lot of <a href="https://shiny.rstudio.com/">shiny</a> projects are built by small teams with a large number of these “teams” being composed of only one developer.
+In this context, we have realized that project management and development are often assigned to the very same person,<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Even if there are several developers on the team, the project manager is also involved in the coding process.&lt;/p&gt;"><sup>1</sup></a> making these two skills deeply integrated when carrying production projects.</p>
+<p>That’s why this book tries to reconcile both these worlds, as building production-grade software needs a reliable and operational code-base which is made possible by having solid technical skills, but also reliable and operational team work and project management.</p>
+</div>
+<div id="what-is-production" class="section level2 unnumbered">
+<h2>What is “production”?<a class="anchor" aria-label="anchor" href="#what-is-production"><i class="fas fa-link"></i></a>
+</h2>
+<p>All throughout this book, we will be using the term “production” to refer to the way we build and deploy our application.
+But what is “production”?</p>
+<p>There have been a lot of definitions of what production is, and even today if you ask around you will get a wide range of different answers.
+We like to think that a piece of software is in production when it combines the three following properties, not only for the users, but also the engineers working on it:</p>
+<ul>
+<li><p>It is <strong>used</strong>, even if only by one person.</p></li>
+<li><p>It is <strong>relied upon</strong> by its user(s).</p></li>
+<li><p>It has <strong>real life impact</strong> if something goes wrong.</p></li>
+</ul>
+<p>These three properties impact two specific groups: users and the developers.</p>
+<p>Indeed, the users rely on the app to work so that they can do their job, and expect it to deliver meaningful results that they can count on.
+From the engineering point of view, a production-grade software can be relied upon in the sense that developers count on it to run as expected, and they need to rely on the software to be resilient to change, <em>i.e</em> to be modular, documented, and strongly tested so that changes can be integrated with confidence.</p>
+<p>A production software also has real-life impact if something goes wrong: users will make wrong decisions, they might be unable to do their day-to-day work, and there are all the things that can happen when the software you use on a daily basis fails to run.
+From the engineering point of view, a production-grade software has real impact when something goes wrong: someone has to fix the bug, the company selling the software might lose money, data can be lost, and so on.</p>
+<p>Given these two properties, you can understand why being in production doesn’t necessarily mean being served to gazillions of users,<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
+“Production” being equal to tons of users is a definition we regularly hear.&lt;/p&gt;"><sup>2</sup></a> and serving trillions of gigabytes of data: even software that is used by one person who relies on this application to do their job is a production software.</p>
+<p>This is what this book is about: building <a href="https://shiny.rstudio.com/">shiny</a> applications that can be used, on which you and your users can rely, and including all the tools that will help you prevent things from going wrong, and when they eventually do, making sure you are equipped to quickly fix the bugs.</p>
+</div>
+<div id="book-structure" class="section level2 unnumbered">
+<h2>Book structure<a class="anchor" aria-label="anchor" href="#book-structure"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li><p>Part 1, “Building Successful <a href="https://shiny.rstudio.com/">shiny</a> Apps” gives a <strong>general context for what we mean by “production-grade” and “successful” <a href="https://shiny.rstudio.com/">shiny</a> applications, and what challenges arise when you are dealing with a large-scale application designed for production</strong>.
+In this part, we will define what we mean by “Successful”, stress the importance of project management, develop how to structure your project for production, and introduce the <a href="https://github.com/ThinkR-open/golem">golem</a> <span class="citation">(<a href="references.html#ref-R-golem">Fay, Guyader, Rochette, et al. 2023</a>)</span> package.
+We will finally, briefly introduce to our development workflow: a workflow that will be explored in Parts 2 to 6.</p></li>
+<li><p>Part 2 through 6 <strong>explore the workflow for building successful applications</strong>.
+<em>Part 2: Design</em> (Step 1) underlines the centrality of the user experience when engineering an application, and emphasizes the importance of designing before coding.
+<em>Part 3: Prototype</em> (Step 2) stresses the importance of prototyping, explores the setting of a <a href="https://github.com/ThinkR-open/golem">golem</a>-based application, and presents <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a>, <a href="https://github.com/Thinkr-open/fakir">fakir</a>, and the “Rmd First” development methodology.
+<em>Part 4: Build</em> (Step 3) explores the building step of the application, <em>i.e</em> the core engineering of the application once the prototyping phase is finished.
+<em>Part 5: Strengthen</em> (Step 4) explores in-depth testing, continuous integration, and version control.
+<em>Part 6: Deploy</em> (Step 5) develops the various possibilities for preparing your application to be deployed.</p></li>
+<li><p>Part 7, “Optimizing” <strong>tackles the question of optimization</strong>, first by introducing the general concepts about optimization, then by presenting some common caveats of <a href="https://shiny.rstudio.com/">shiny</a> apps, and then showing how to optimize R code, and how to use JavaScript to lighten R work.
+This part ends with a gentle introduction to CSS (Cascading Style Sheets).</p></li>
+</ul>
+</div>
+<div id="about-the-authors" class="section level2 unnumbered">
+<h2>About the authors<a class="anchor" aria-label="anchor" href="#about-the-authors"><i class="fas fa-link"></i></a>
+</h2>
+<div id="colin-fay" class="section level3 unnumbered">
+<h3>
+<a href="https://colinfay.me/">Colin Fay</a><a class="anchor" aria-label="anchor" href="#colin-fay"><i class="fas fa-link"></i></a>
+</h3>
+<p>Colin has written the vast majority of this book. He’s responsible for its general structure, and for the original design of the workflow described. Most of the time (if not every time) “we” actually refers to him. He is the lead developer of the <a href="https://github.com/ThinkR-open/golem">golem</a> framework, and creator of many tools described in this book.</p>
+<p>Colin works at ThinkR, a French agency focused on everything R related. During the day, he helps companies to take full advantage of the power of R, by building tools (packages, web apps, etc.) and setting up infrastructure. His main areas of expertise are data and software engineering, infrastructure, web applications (front-end and back-end), and R in production.</p>
+<p>During the night, Colin is also a hyperactive open-source developer and an open-data advocate. You can find a lot of his work on his GitHub account (<a href="https://github.com/ColinFay" class="uri">https://github.com/ColinFay</a>) and on ThinkR’s account (<a href="https://github.com/thinkr-open" class="uri">https://github.com/thinkr-open</a>).</p>
+<p>He is also active in the R and Data community, and is an international speaker.</p>
+</div>
+<div id="sébastien-rochette" class="section level3 unnumbered">
+<h3>
+<a href="https://statnmap.com/">Sébastien Rochette</a><a class="anchor" aria-label="anchor" href="#s%C3%A9bastien-rochette"><i class="fas fa-link"></i></a>
+</h3>
+<p>Sébastien has been instrumental in the review of most of this book’s chapters.
+He has also written the section about prototyping in RMarkdown, a concept he initiated.</p>
+<p>Sébastien is a data scientist at ThinkR, where he teaches anything R related from beginner to expert level, guides R developers towards implementation of best practices, and creates tailor-made R solutions for the needs of his customers.</p>
+</div>
+<div id="vincent-guyader" class="section level3 unnumbered">
+<h3>
+<a href="https://twitter.com/VincentGuyader">Vincent Guyader</a><a class="anchor" aria-label="anchor" href="#vincent-guyader"><i class="fas fa-link"></i></a>
+</h3>
+<p>Vincent is the founder of ThinkR. He created the first proof-of-concept framework for <a href="https://shiny.rstudio.com/">shiny</a> applications inside packages; an idea which has led to the creation of <a href="https://github.com/ThinkR-open/golem">golem</a>.
+If you feel like a GitHub archaeologist, this very first version is still available with a little bit of exploration!</p>
+<p>With more than ten years of experience with R, and a scientific and technical background, Vincent is an R enthusiast.
+He still has his hands in the code, whether to develop applications, analyze data, or build packages.
+When he’s not coding, he plays with Docker and manages servers.
+He strongly believes that meeting highly technical challenges is not incompatible with pedagogy: he passionately trains very diverse learner profiles in R.</p>
+</div>
+<div id="cervan-girard" class="section level3 unnumbered">
+<h3>
+<a href="https://twitter.com/CervanGirard">Cervan Girard</a><a class="anchor" aria-label="anchor" href="#cervan-girard"><i class="fas fa-link"></i></a>
+</h3>
+<p>Cervan has worked on some of the example applications that are used inside this book, namely <code>{shinipsumdemo}</code>, <code>{databasedemo}</code>, <code>{grayscale}</code>, <code>{bs4dashdemo}</code>, and <code>{shinyfuture}</code>.</p>
+<p>Cervan is a Data Scientist at ThinkR.
+He is enthusiastic and motivated when it comes to rolling up his sleeves for new challenges, even if it means venturing dangerously into the depths of R, learning new languages, and experimenting outside your comfort zone.</p>
+<p>Whatever the challenge, he remains reliable, constructive, and efficient when it comes to using his skills to train or develop. He also enjoys training learners of all levels in the R language.</p>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div id="disclaimer" class="section level2 unnumbered">
+<h2>Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"><i class="fas fa-link"></i></a>
+</h2>
+<p>Open source is moving (very) fast, and some of the tools described in this book are still under active development.
+But good news!
+<strong>A large portion of this book is about the methodology, and not purely the technology</strong>, so even if some of the packages and code sections used in this book can (and will) become obsolete, a significant part of what is described in this book will still be relevant.</p>
+<p>When reading this book, remember that they are a “snapshot” of various technologies and packages, which might someday become out of date, have breaking changes, or even disappear.
+The last revisions of the pages you’re reading now have been done on March 12, 2024.
+We will <strong>try to update the online version whenever changes are made to the packages used in this book</strong>, so feel free to browse the online version<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;Available at &lt;a href="https://engineering-shiny.org" class="uri"&gt;https://engineering-shiny.org&lt;/a&gt;.&lt;/p&gt;'><sup>3</sup></a> for up-to-date information.</p>
+</div>
+<div id="software-information-and-conventions" class="section level2 unnumbered">
+<h2>Software information and conventions<a class="anchor" aria-label="anchor" href="#software-information-and-conventions"><i class="fas fa-link"></i></a>
+</h2>
+<p>This book was built with <a href="https://yihui.org/knitr/">knitr</a> <span class="citation">(<a href="references.html#ref-R-knitr">Xie 2023b</a>)</span> and <a href="https://github.com/rstudio/bookdown">bookdown</a> <span class="citation">(<a href="references.html#ref-R-bookdown">Xie 2023a</a>)</span>.</p>
+<p>Package names are in curly brackets in code format (e.g., <a href="https://github.com/rstudio/rmarkdown">rmarkdown</a>), and inline code and file names are formatted in a typewriter font (e.g., <code>knitr::knit('doc.Rmd')</code>).
+Function names are formatted in a typewriter font and followed by parentheses (e.g., <code>render_book()</code>).
+Larger code blocks are formatted in a typewriter font and have a gray backgroud, e.g.:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"golem"</span><span class="op">)</span></span></code></pre></div>
+<p>When we describe a package that can be installed from GitHub, we use the <code>install_github()</code> function from the <a href="https://remotes.r-lib.org">remotes</a> <span class="citation">(<a href="references.html#ref-R-remotes">Csárdi et al. 2023</a>)</span> package.
+In other words, the following code:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ColinFay/dockerstats"</span><span class="op">)</span></span></code></pre></div>
+<p>means that the package will be installed from GitHub, and that you can use the <a href="https://remotes.r-lib.org">remotes</a> package, which has to be installed on your machine if not already there.</p>
+</div>
+<div id="want-to-help" class="section level2 unnumbered">
+<h2>Want to help?<a class="anchor" aria-label="anchor" href="#want-to-help"><i class="fas fa-link"></i></a>
+</h2>
+<p>Any feedback on the book is very welcome.
+Feel free to <a href="https://github.com/ThinkR-open/engineering-shiny-book/issues">open an issue</a>, or to make a Pull Request if you spot a typo.</p>
+</div>
+<div id="other-resources" class="section level2 unnumbered">
+<h2>Other resources<a class="anchor" aria-label="anchor" href="#other-resources"><i class="fas fa-link"></i></a>
+</h2>
+<p>One single book could not cover everything there is to know about <a href="https://shiny.rstudio.com/">shiny</a>.
+Here are some resources you can use in addition to this book.
+You can also find more resources in the bibliography.</p>
+<div id="getting-started-with-shiny" class="section level3 unnumbered">
+<h3>Getting started with <code>{shiny}</code><a class="anchor" aria-label="anchor" href="#getting-started-with-shiny"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><a href="https://github.com/hadley/shiny-book">Mastering Shiny</a></li>
+<li><a href="https://shiny.rstudio.com/tutorial/">Learn Shiny with RStudio</a></li>
+<li><a href="https://ourcodingclub.github.io/2017/03/07/shiny.html">Getting Started with Shiny</a></li>
+<li><a href="https://laderast.github.io/gradual_shiny/">A gRadual intRoduction to Shiny</a></li>
+<li><a href="https://github.com/rstudio-conf-2020/shiny-start-finish">Shiny From Start To Finish</a></li>
+</ul>
+</div>
+<div id="putting-shiny-into-production" class="section level3 unnumbered">
+<h3>Putting <code>{shiny}</code> into production<a class="anchor" aria-label="anchor" href="#putting-shiny-into-production"><i class="fas fa-link"></i></a>
+</h3>
+<ul>
+<li><a href="https://resources.rstudio.com/rstudio-conf-2019/shiny-in-production-principles-practices-and-tools-joe-cheng">Shiny in production: Principles, practices, and tools</a></li>
+<li><a href="https://kellobri.github.io/shiny-prod-book/">Shiny in Production</a></li>
+</ul>
+<p>Feel free to <a href="https://github.com/ThinkR-open/engineering-shiny-book/issues">suggest a resource</a>!</p>
+</div>
+</div>
+<div id="acknowledgments" class="section level2 unnumbered">
+<h2>Acknowledgments<a class="anchor" aria-label="anchor" href="#acknowledgments"><i class="fas fa-link"></i></a>
+</h2>
+<div id="special-thanks" class="section level3 unnumbered">
+<h3>Special thanks<a class="anchor" aria-label="anchor" href="#special-thanks"><i class="fas fa-link"></i></a>
+</h3>
+<p>We want to thank ThinkR for allowing us time to write this book, and for always being supportive during the project.</p>
+<p>Colin wants to personally thank <a href="https://twitter.com/chrisderv">Christophe Dervieux</a> for all his help with this book and any other projects, and for being such an awesome person.
+He also wants to thank <a href="https://r-podcast.org/">Eric Nantz</a> for taking the time to write the Foreword, for being one of the first <a href="https://github.com/ThinkR-open/golem">golem</a> adopters, and for always being enthusiastic about all things gravitating around the <code>golemverse</code>.
+A big thanks also to <a href="https://divadnojnarg.github.io/">David Granjon</a> for his precious feedback on this book.</p>
+</div>
+<div id="contributors-to-this-book" class="section level3 unnumbered">
+<h3>Contributors to this book<a class="anchor" aria-label="anchor" href="#contributors-to-this-book"><i class="fas fa-link"></i></a>
+</h3>
+<p>We want to thank all the people that have contributed to this book, either via Pull Requests, Issues on the book’s GitHub repository, or via direct conversation.</p>
+<p><a href="https://github.com/aicesan">@aicesan</a>, <a href="https://github.com/allaway">@allaway</a>, <a href="https://github.com/andreferraribr">@andreferraribr</a>, <a href="https://github.com/ardeeshany">@ardeeshany</a>, <a href="https://github.com/aronolof">@aronolof</a>, <a href="https://github.com/BenjaminLouis">@BenjaminLouis</a>, <a href="https://github.com/bstrain71">@bstrain71</a>, <a href="https://github.com/cedricbriandgithub">@cedricbriandgithub</a>, <a href="https://github.com/coreyyanofsky">@coreyyanofsky</a>, <a href="https://github.com/dA505819">@dA505819</a>, <a href="https://github.com/dan-reznik">@dan-reznik</a>, <a href="https://github.com/davidpb90">@davidpb90</a>, <a href="https://github.com/denrou">@denrou</a>, <a href="https://github.com/Dschaykib">@Dschaykib</a>, <a href="https://github.com/ehesch">@ehesch</a>, <a href="https://github.com/eroten">@eroten</a>, <a href="https://github.com/espinielli">@espinielli</a>, <a href="https://github.com/etiennebacher">@etiennebacher</a>, <a href="https://github.com/fBedecarrats">@fBedecarrats</a>, <a href="https://github.com/flrd">@flrd</a>, <a href="https://github.com/frankschmitt">@frankschmitt</a>, <a href="https://github.com/FrieseWoudloper">@FrieseWoudloper</a>, <a href="https://github.com/giocomai">@giocomai</a>, <a href="https://github.com/gowachin">@gowachin</a>, <a href="https://github.com/graue70">@graue70</a>, <a href="https://github.com/Guillaume-Lombardo">@Guillaume-Lombardo</a>, <a href="https://github.com/gwd999">@gwd999</a>, <a href="https://github.com/hadley">@hadley</a>, <a href="https://github.com/hsm207">@hsm207</a>, <a href="https://github.com/jamespooley">@jamespooley</a>, <a href="https://github.com/jcrodriguez1989">@jcrodriguez1989</a>, <a href="https://github.com/jonmcalder">@jonmcalder</a>, <a href="https://github.com/josbop">@josbop</a>, <a href="https://github.com/jpmarindiaz">@jpmarindiaz</a>, <a href="https://github.com/jtelleriar">@jtelleriar</a>, <a href="https://github.com/julianstanley">@julianstanley</a>, <a href="https://github.com/kdaily">@kdaily</a>, <a href="https://github.com/maelle">@maelle</a>, <a href="https://github.com/mayeulk">@mayeulk</a>, <a href="https://github.com/naomistrandberg">@naomistrandberg</a>, <a href="https://github.com/psychometrician">@psychometrician</a>, <a href="https://github.com/rainiercito">@rainiercito</a>, <a href="https://github.com/ronniemo">@ronniemo</a>, <a href="https://github.com/rpodcast">@rpodcast</a>, <a href="https://github.com/sowla">@sowla</a>, <a href="https://github.com/tellyshia">@tellyshia</a>, <a href="https://github.com/ukyouhanDVSA">@ukyouhanDVSA</a>, <a href="https://github.com/xari">@xari</a>, and <a href="https://github.com/xvrdm">@xvrdm</a>.</p>
+
+</div>
+</div>
+</div>
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="empty"></div>
+<div class="next"><a href="foreword.html">Foreword</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#introduction">Introduction</a></li>
+<li><a class="nav-link" href="#motivation">Motivation</a></li>
+<li><a class="nav-link" href="#audience-for-this-book">Audience for this book</a></li>
+<li><a class="nav-link" href="#what-is-production">What is “production”?</a></li>
+<li><a class="nav-link" href="#book-structure">Book structure</a></li>
+<li>
+<a class="nav-link" href="#about-the-authors">About the authors</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#colin-fay">Colin Fay</a></li>
+<li><a class="nav-link" href="#s%C3%A9bastien-rochette">Sébastien Rochette</a></li>
+<li><a class="nav-link" href="#vincent-guyader">Vincent Guyader</a></li>
+<li><a class="nav-link" href="#cervan-girard">Cervan Girard</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#disclaimer">Disclaimer</a></li>
+<li><a class="nav-link" href="#software-information-and-conventions">Software information and conventions</a></li>
+<li><a class="nav-link" href="#want-to-help">Want to help?</a></li>
+<li>
+<a class="nav-link" href="#other-resources">Other resources</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#getting-started-with-shiny">Getting started with {shiny}</a></li>
+<li><a class="nav-link" href="#putting-shiny-into-production">Putting {shiny} into production</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#acknowledgments">Acknowledgments</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#special-thanks">Special thanks</a></li>
+<li><a class="nav-link" href="#contributors-to-this-book">Contributors to this book</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/index.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/index.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

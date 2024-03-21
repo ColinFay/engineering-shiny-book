@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 16 Optimizing {shiny} Code | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="16.1 Optimizing R code In its core, {shiny} runs R code on the server side. To be efficient, the R code computing your values and returning results also has to be optimized. Optimizing R code is a...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 16 Optimizing {shiny} Code | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="16.1 Optimizing R code In its core, {shiny} runs R code on the server side. To be efficient, the R code computing your values and returning results also has to be optimized. Optimizing R code is a...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 16 Optimizing {shiny} Code | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="16.1 Optimizing R code In its core, {shiny} runs R code on the server side. To be efficient, the R code computing your values and returning results also has to be optimized. Optimizing R code is a...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="active" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="optimizing-shiny-code" class="section level1" number="16">
+<h1>
+<span class="header-section-number">16</span> Optimizing <code>{shiny}</code> Code<a class="anchor" aria-label="anchor" href="#optimizing-shiny-code"><i class="fas fa-link"></i></a>
+</h1>
+<div id="optimizing-r-code" class="section level2" number="16.1">
+<h2>
+<span class="header-section-number">16.1</span> Optimizing R code<a class="anchor" aria-label="anchor" href="#optimizing-r-code"><i class="fas fa-link"></i></a>
+</h2>
+<p>In its core, <a href="https://shiny.rstudio.com/">shiny</a> runs R code on the server side.
+To be efficient, the R code computing your values and returning results also has to be optimized.</p>
+<p>Optimizing R code is a very broad topic, and it would be possible to write a full book about it.
+In fact, a lot of books and blog posts already cover this topic.
+Instead of re-writing these books, we will try to point to some crucial resources you can refer to if you want to get started optimizing your R code.</p>
+<ul>
+<li><p>Efficient R programming <span class="citation">(<a href="references.html#ref-colingillespie2017">Gillespie and Lovelace 2017</a>)</span>, has a series of methods you can quickly put into practice for more efficient R code.</p></li>
+<li><p>Advanced R <span class="citation">(<a href="references.html#ref-hadleywickham2019">Wickham 2019</a>)</span> has a chapter about optimizing R code (number 24).
+In the rest of this chapter, we will be focusing on how to optimize <a href="https://shiny.rstudio.com/">shiny</a> specifically.</p></li>
+</ul>
+</div>
+<div id="caching-elements" class="section level2" number="16.2">
+<h2>
+<span class="header-section-number">16.2</span> Caching elements<a class="anchor" aria-label="anchor" href="#caching-elements"><i class="fas fa-link"></i></a>
+</h2>
+<div id="what-is-caching" class="section level3" number="16.2.1">
+<h3>
+<span class="header-section-number">16.2.1</span> What is caching?<a class="anchor" aria-label="anchor" href="#what-is-caching"><i class="fas fa-link"></i></a>
+</h3>
+<p>Caching is the process of storing resources-intensive results so that when they are needed again, your program can reuse the result another time without having to redo the computation again.
+This is particularly useful for computation that will always return the same result, and should never be used if you expect the result could vary from one function call to the other.</p>
+<p>How does it work?
+Let’s make a brief parallel with the human brain, and imagine that you know that you will need to use a phone number many times during the day, and for the purpose of this thought experiment, you are completely unable to remember it.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Anyway, now that we all have smartphones, who still remembers phone numbers?&lt;/p&gt;"><sup>61</sup></a>
+What are you going to do?
+There are two solutions here: either you look in the phone book or in your phone contact list every time you need it, which takes a couple of seconds every time, or you use a post-it that you put on your computer screen with the number on it, so that you have direct access to it when you need it.
+It takes a couple of seconds the first time you look for the number, but it is almost instantaneous the next times you need it.</p>
+<p>This is what caching does: <strong>it stores the result of an expensive computation, so that the next time you need the very same information again, you can read the result instead of redoing the full computation</strong>.
+The downside is that you only have limited space on your screen: when your screen is covered by sticky notes, you cannot store any more notes.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;In that case, you can either hide pre-existing sticky notes, or buy a bigger screen.
+But we are not here to talk about cache management theory.
+If you are interested in reading more about caching theory, we suggest the excellent &lt;em&gt;Algorithms to Live By&lt;/em&gt;, by Brian Christian and Tom Griffiths &lt;span class="citation"&gt;(&lt;a href="references.html#ref-brianchristian2016"&gt;Christian and Griffiths 2016&lt;/a&gt;)&lt;/span&gt;.&lt;/p&gt;'><sup>62</sup></a></p>
+<p>In the context of an interactive application built with <a href="https://shiny.rstudio.com/">shiny</a>, it makes sense to cache data structures: users tend to repeat what they do, or go back and forth between parameters.
+For example, if you have a graph which is taking 2 seconds to render (which is quite common in <a href="https://shiny.rstudio.com/">shiny</a>, notably when relying on <a href="https://ggplot2.tidyverse.org">ggplot2</a> <span class="citation">(<a href="references.html#ref-R-ggplot2">Wickham, Chang, et al. 2023</a>)</span>), you do not want these 2 seconds to be repeated over and over again when users switch from one parameter to another.
+In that case, it does make sense to cache the result: if you call <code>ploting_function(input$selection)</code> twice with the same value for <code>input$selection</code>, and you are sure that this plot will be the same every time, you can cache it.
+In other words, instead of recomputing the graph on each <code>input$selection</code> change, you can cache the plot the first time it is generated, and then the application will read the cache instead of re-doing the computation.</p>
+<p>Same goes for queries to a database: if a query is done with the same parameters, and you know that they will return the same result, there is no need to ask the database again and again—ask the cache to retrieve the data.</p>
+<p>Keep in mind that this caching mechanism is only to be used when <strong>the data don’t change</strong>.
+For example, if you are calling a database which is updated on a regular basis, you might not want to cache the results of a function.
+In that specific case, you will want the query to be performed every time the function is called, so that you get fresh data.</p>
+</div>
+<div id="native-caching-in-r" class="section level3" number="16.2.2">
+<h3>
+<span class="header-section-number">16.2.2</span> Native caching in R<a class="anchor" aria-label="anchor" href="#native-caching-in-r"><i class="fas fa-link"></i></a>
+</h3>
+<p>At least two packages in R implement caching of functions (also called memoization): <a href="https://github.com/HenrikBengtsson/R.cache">R.cache</a> <span class="citation">(<a href="references.html#ref-R-R.cache">Bengtsson 2022</a>)</span>, and <a href="https://memoise.r-lib.org">memoise</a> <span class="citation">(<a href="references.html#ref-R-memoise">Wickham et al. 2021</a>)</span>.
+They both more or less work the same way: you will call a memoization function on another function, and cache is created for this function output, based on the arguments value.
+Then every time you call this function again with the same parameters, the cache is returned instead of computing the function another time.
+For example, if computing your data once takes 5 seconds with the parameter <code>n = 50</code>, the next time you will be calling this function with <code>n = 50</code>, instead of recomputing, R will go and fetch the value stored in cache.</p>
+<p>Here is a simple example with <a href="https://memoise.r-lib.org">memoise</a>:</p>
+<div class="sourceCode" id="cb278"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://memoise.r-lib.org">memoise</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jabiru/tictoc">tictoc</a></span><span class="op">)</span></span>
+<span><span class="co"># We define a function that sleeps for a given number of seconds, </span></span>
+<span><span class="co"># then return the time </span></span>
+<span><span class="va">sleep_and_return_time</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">seconds</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="va">seconds</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co"># "Memoising" this function</span></span>
+<span><span class="va">msleep_and_return_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://memoise.r-lib.org/reference/memoise.html">memoise</a></span><span class="op">(</span><span class="va">sleep_and_return_time</span><span class="op">)</span></span>
+<span><span class="co"># We use the {tictoc} package to count the time to run the code</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># This will sleeep for 2 seconds and return the time</span></span>
+<span><span class="fu">msleep_and_return_time</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<pre><code>[1] "2024-03-12 15:52:10 UTC"</code></pre>
+<div class="sourceCode" id="cb280"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The code should have taken around 2 seconds to run</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>2.005 sec elapsed</code></pre>
+<div class="sourceCode" id="cb282"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We launch a new recording</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># This memoised function will return immediately, </span></span>
+<span><span class="co"># without sleeping</span></span>
+<span><span class="fu">msleep_and_return_time</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<pre><code>[1] "2024-03-12 15:52:10 UTC"</code></pre>
+<div class="sourceCode" id="cb284"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>0.034 sec elapsed</code></pre>
+<p>Let’s try with another example that might look more like what we can find in a <a href="https://shiny.rstudio.com/">shiny</a> app: connecting to a database, using the <a href="https://dbi.r-dbi.org">DBI</a> <span class="citation">(<a href="references.html#ref-R-DBI">R Special Interest Group on Databases (R-SIG-DB), Wickham, and Müller 2022</a>)</span> and <a href="https://rsqlite.r-dbi.org">RSQLite</a> <span class="citation">(<a href="references.html#ref-R-RSQLite">Müller et al. 2023</a>)</span> packages:</p>
+<div class="sourceCode" id="cb286"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We create an in-memory database using SQLite</span></span>
+<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span></span>
+<span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>  dbname <span class="op">=</span> <span class="st">":memory:"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Writing a large dataset to the db</span></span>
+<span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html">dbWriteTable</a></span><span class="op">(</span></span>
+<span>  <span class="va">con</span>, </span>
+<span>  <span class="st">"diams"</span>, </span>
+<span>  <span class="co"># This table will have 539400 rows</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/rerun.html">rerun</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="va"><a href="https://ggplot2.tidyverse.org/reference/diamonds.html">diamonds</a></span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># We memoise the dbGetQuery,</span></span>
+<span><span class="co">#  so that every time this function is called with</span></span>
+<span><span class="co"># the same parameters, </span></span>
+<span><span class="co"># the SQL query is not actually run,</span></span>
+<span><span class="co">#  but the results are fetched from the cache </span></span>
+<span><span class="va">m_get_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://memoise.r-lib.org/reference/memoise.html">memoise</a></span><span class="op">(</span><span class="fu">DBI</span><span class="fu">::</span><span class="va"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">)</span></span>
+<span><span class="co"># We call a function the first time, </span></span>
+<span><span class="co"># with the connection object and an SQL query</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">res_a</span> <span class="op">&lt;-</span> <span class="fu">m_get_query</span><span class="op">(</span></span>
+<span>  <span class="va">con</span>, </span>
+<span>  <span class="st">"SELECT * FROM diams WHERE cut = 'Ideal'"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>1.251 sec elapsed</code></pre>
+<div class="sourceCode" id="cb288"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We call this function a second time, </span></span>
+<span><span class="co"># with the same parameters</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">res_b</span> <span class="op">&lt;-</span> <span class="fu">m_get_query</span><span class="op">(</span></span>
+<span>  <span class="va">con</span>, </span>
+<span>  <span class="st">"SELECT * FROM diams WHERE cut = 'Ideal'"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>0.005 sec elapsed</code></pre>
+<div class="sourceCode" id="cb290"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Let's check that the two are equal</span></span>
+<span><span class="fu"><a href="https://generics.r-lib.org/reference/setops.html">setequal</a></span><span class="op">(</span><span class="va">res_a</span>, <span class="va">res_b</span><span class="op">)</span></span></code></pre></div>
+<pre><code>[1] TRUE</code></pre>
+<div class="sourceCode" id="cb292"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We now try with a new SQL code (cut = 'Good')</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">tic</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">res_c</span> <span class="op">&lt;-</span> <span class="fu">m_get_query</span><span class="op">(</span></span>
+<span>  <span class="va">con</span>, </span>
+<span>  <span class="st">"SELECT * FROM diams WHERE cut = 'Good'"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tictoc/man/tic.html">toc</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code>0.384 sec elapsed</code></pre>
+<div class="sourceCode" id="cb294"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The function has effectively returned a different result</span></span>
+<span><span class="fu"><a href="https://generics.r-lib.org/reference/setops.html">setequal</a></span><span class="op">(</span><span class="va">res_a</span>, <span class="va">res_c</span><span class="op">)</span></span></code></pre></div>
+<pre><code>[1] FALSE</code></pre>
+<p>Note that you can change where the cache is stored by <a href="https://memoise.r-lib.org">memoise</a>.
+Here, we will save it in a random directory (do not do this in production).</p>
+<div class="sourceCode" id="cb296"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">random_dir</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html">path</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span></span>
+<span>      <span class="va">letters</span>, </span>
+<span>      <span class="fl">10</span></span>
+<span>    <span class="op">)</span>, </span>
+<span>    collapse <span class="op">=</span> <span class="st">""</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">random_dir</span></span></code></pre></div>
+<pre><code>xawcubtjzp</code></pre>
+<div class="sourceCode" id="cb298"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># We create a directory in the current working directory</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/create.html">dir_create</a></span><span class="op">(</span><span class="va">random_dir</span><span class="op">)</span></span>
+<span><span class="co"># We use this directory as the cache_filesystem for {memoise}</span></span>
+<span><span class="va">local_cache_folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://memoise.r-lib.org/reference/cache_filesystem.html">cache_filesystem</a></span><span class="op">(</span><span class="va">random_dir</span><span class="op">)</span></span>
+<span><span class="co"># The memoised function will use this directory for cache</span></span>
+<span><span class="va">m_get_query</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://memoise.r-lib.org/reference/memoise.html">memoise</a></span><span class="op">(</span></span>
+<span>  <span class="fu">DBI</span><span class="fu">::</span><span class="va"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span>, </span>
+<span>  cache <span class="op">=</span> <span class="va">local_cache_folder</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Run the function twice</span></span>
+<span><span class="va">res_a</span> <span class="op">&lt;-</span> <span class="fu">m_get_query</span><span class="op">(</span></span>
+<span>  <span class="va">con</span>,</span>
+<span>  <span class="st">"SELECT * FROM diams WHERE cut = 'Ideal'"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">res_b</span> <span class="op">&lt;-</span> <span class="fu">m_get_query</span><span class="op">(</span></span>
+<span>  <span class="va">con</span>,</span>
+<span>  <span class="st">"SELECT * FROM diams WHERE cut = 'Good'"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">res_c</span> <span class="op">&lt;-</span> <span class="fu">m_get_query</span><span class="op">(</span></span>
+<span>  <span class="va">con</span>, </span>
+<span>  <span class="st">"SELECT * FROM diams WHERE cut = 'Good'"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># The random directory now contains two objects, </span></span>
+<span><span class="co"># one for each memoized call</span></span>
+<span><span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_tree.html">dir_tree</a></span><span class="op">(</span><span class="va">random_dir</span><span class="op">)</span></span></code></pre></div>
+<pre><code>xawcubtjzp
+├── 3764a0a4950cb30b
+└── c295e060ea7d77c1</code></pre>
+<p>As you can see, we now have two cache objects inside the directory we have specified as a <code>cache_filesystem</code>.</p>
+</div>
+<div id="caching-in-shiny" class="section level3" number="16.2.3">
+<h3>
+<span class="header-section-number">16.2.3</span> Caching in <code>{shiny}</code><a class="anchor" aria-label="anchor" href="#caching-in-shiny"><i class="fas fa-link"></i></a>
+</h3>
+<p>We can apply what we have just seen with <a href="https://memoise.r-lib.org">memoise</a>, for example, to render a table:</p>
+<div class="sourceCode" id="cb300"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://memoise.r-lib.org">memoise</a></span><span class="op">)</span></span>
+<span><span class="co"># We create an in-memory database using SQLite</span></span>
+<span><span class="va">con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span></span>
+<span>  <span class="fu">RSQLite</span><span class="fu">::</span><span class="fu"><a href="https://rsqlite.r-dbi.org/reference/SQLite.html">SQLite</a></span><span class="op">(</span><span class="op">)</span>, </span>
+<span>  dbname <span class="op">=</span> <span class="st">":memory:"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Writing a large dataset to the db</span></span>
+<span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbWriteTable.html">dbWriteTable</a></span><span class="op">(</span></span>
+<span>  <span class="va">con</span>, </span>
+<span>  <span class="st">"diams"</span>, </span>
+<span>  <span class="co"># This table will have 539400 rows</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>    <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/rerun.html">rerun</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu">ggplot2</span><span class="fu">::</span><span class="va"><a href="https://ggplot2.tidyverse.org/reference/diamonds.html">diamonds</a></span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<pre><code>Warning: `rerun()` was deprecated in purrr 1.0.0.
+ℹ Please use `map()` instead.
+  # Previously
+  rerun(10, ggplot2::diamonds)
+
+  # Now
+  map(1:10, ~ ggplot2::diamonds)
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see
+where this warning was generated.</code></pre>
+<div class="sourceCode" id="cb302"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fct_sql</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">cut</span>, <span class="va">con</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="co"># NEVER EVER SPRINTF AN SQL CODE LIKE THAT</span></span>
+<span>  <span class="co"># IT'S SENSITIVE TO SQL INJECTIONS, WE'RE</span></span>
+<span>  <span class="co"># DOING IT FOR THE EXAMPLE</span></span>
+<span>  <span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span><span class="st">"Calling the SQL db"</span><span class="op">)</span></span>
+<span>  <span class="va">results</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html">dbGetQuery</a></span><span class="op">(</span></span>
+<span>    <span class="va">con</span>, <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span></span>
+<span>      <span class="st">"SELECT * FROM diams WHERE cut = '%s'"</span>, </span>
+<span>      <span class="va">cut</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Using a local cache</span></span>
+<span><span class="va">cache_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://memoise.r-lib.org/reference/cache_filesystem.html">cache_filesystem</a></span><span class="op">(</span><span class="st">"cache"</span><span class="op">)</span></span>
+<span><span class="va">memoised_fct_sql</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://memoise.r-lib.org/reference/memoise.html">memoise</a></span><span class="op">(</span><span class="va">fct_sql</span>, cache <span class="op">=</span> <span class="va">cache_dir</span><span class="op">)</span></span></code></pre></div>
+<p>Then, it can be used in an app:</p>
+<div class="sourceCode" id="cb303"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># The user can select one of the cut from ggplot2::diamonds,  </span></span>
+<span>    <span class="co"># {shiny} will then query the SQL database to retrieve the </span></span>
+<span>    <span class="co"># first rows of the result</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span><span class="st">"cut"</span>, <span class="st">"cut"</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html">unique</a></span><span class="op">(</span><span class="fu">ggplot2</span><span class="fu">::</span><span class="va"><a href="https://ggplot2.tidyverse.org/reference/diamonds.html">diamonds</a></span><span class="op">$</span><span class="va">cut</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderTable.html">tableOutput</a></span><span class="op">(</span><span class="st">"tbl"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># Rendering the table of the SQL call</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderTable.html">renderTable</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Using a memoised function allows to prevent from </span></span>
+<span>    <span class="co"># calling the SQL database every time the user inputs</span></span>
+<span>    <span class="co"># a change</span></span>
+<span>    <span class="fu">memoised_fct_sql</span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">cut</span>, <span class="va">con</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>You will see that the first time you run this piece of code, it will take a couple of seconds to render the table for a new <code>input$cut</code> value.
+But if you re-select this input a second time, the output will show instantaneously.</p>
+<p>Since version <code>1.6.0</code>, <a href="https://shiny.rstudio.com/">shiny</a> <span class="citation">(<a href="references.html#ref-R-shiny">Chang et al. 2022</a>)</span> has two caching functions: <code><a href="https://rdrr.io/pkg/shiny/man/renderCachedPlot.html">renderCachedPlot()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/bindCache.html">bindCache()</a></code>
+(note that <code><a href="https://rdrr.io/pkg/shiny/man/renderCachedPlot.html">renderCachedPlot()</a></code> is in <a href="https://shiny.rstudio.com/">shiny</a> since version <code>1.2.0</code>).</p>
+<p><code><a href="https://rdrr.io/pkg/shiny/man/renderCachedPlot.html">renderCachedPlot()</a></code> behaves more or less like the <code><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot()</a></code> function, except that it is tailored for caching.
+The extra arguments you will find are <code>cacheKeyExpr</code> and <code>sizePolicy</code>: the former is the list of inputs and values that allow you to cache the plot—every time these values and inputs are the same, they produce the same graph, so <a href="https://shiny.rstudio.com/">shiny</a> will be fetching inside the cache instead of computing the value another time.
+<code>sizePolicy</code> is a function that returns a <code>width</code> and a <code>height</code>, which are used to round the plot dimension in pixels, so that not every pixel combination is generated in the cache.</p>
+<p>The good news is that converting existing <code><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot()</a></code> functions to <code><a href="https://rdrr.io/pkg/shiny/man/renderCachedPlot.html">renderCachedPlot()</a></code> is pretty straightforward in most cases: take your current <code><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot()</a></code>, and add the cache keys.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;In some cases you will have to configure the size policy, but in most cases the default values work just well.&lt;/p&gt;"><sup>63</sup></a></p>
+<p>Here is an example:</p>
+<div class="sourceCode" id="cb304"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># We select a data.frame to plot</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/selectInput.html">selectInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"tbl"</span>, </span>
+<span>      <span class="st">"Table"</span>, </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"iris"</span>, <span class="st">"mtcars"</span>, <span class="st">"airquality"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="co"># This plotOutput will be cached</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># The cache mechanism is made available by renderCachedPlot</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderCachedPlot.html">renderCachedPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Plotting the selected data.frame</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/get.html">get</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">tbl</span><span class="op">)</span> <span class="op">)</span></span>
+<span>  <span class="op">}</span>, cacheKeyExpr <span class="op">=</span> <span class="op">{</span></span>
+<span>    <span class="co"># List here all the reactive expression that will </span></span>
+<span>    <span class="co"># be used as cache key when running the app, </span></span>
+<span>    <span class="co"># you will see that the first time you plot one </span></span>
+<span>    <span class="co"># graph, it takes a couple of seconds, </span></span>
+<span>    <span class="co"># but the second time, it's almost </span></span>
+<span>    <span class="co"># instantaneous</span></span>
+<span>    <span class="va">input</span><span class="op">$</span><span class="va">tbl</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>If you try this app, the first rendering of the three plots will take a little bit of time, but every subsequent rendering of the plot is almost instantaneous.</p>
+<p><code><a href="https://rdrr.io/pkg/shiny/man/bindCache.html">bindCache()</a></code>, a new function from version <code>1.6.0</code>, offers a more general approach, as it can cache any reactive expression.</p>
+<div class="sourceCode" id="cb305"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Select a number of row to sample from mtcars</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/sliderInput.html">sliderInput</a></span><span class="op">(</span></span>
+<span>      <span class="st">"nrows"</span>, </span>
+<span>      <span class="st">"Number of rows"</span>, </span>
+<span>      <span class="fl">1</span>, </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span>, </span>
+<span>      <span class="fl">10</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderTable.html">tableOutput</a></span><span class="op">(</span><span class="st">"tbl"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># The random sample will always be the same</span></span>
+<span>  <span class="co"># Whenever input$nrows is the same</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderTable.html">renderTable</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/sample_n.html">sample_n</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="va">input</span><span class="op">$</span><span class="va">nrows</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/bindCache.html">bindCache</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>      <span class="va">input</span><span class="op">$</span><span class="va">nrows</span></span>
+<span>    <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Caching is a nice way to make your app faster, even more if you expect your output to be stable over time: if the plot created by a series of inputs stays the same throughout your app lifecycle, it is worth thinking about implementing on-disk caching</strong>.
+With <a href="https://memoise.r-lib.org">memoise</a>, you can also use remote caching, in the form of Amazon S3 storage or with Google Cloud Storage.
+See also the <a href="https://github.com/ThinkR-open/bank">{bank}</a> package for database caching of <a href="https://shiny.rstudio.com/">shiny</a> expressions.</p>
+<p>If your application needs “fresh” data every time it is used, for example because data in the SQL database are updated every hour, cache will not be of much help here.
+On the contrary, the same function inputs will render different output depending on when they are called.</p>
+<p>One other thing to remember is that, just like our computer screen from our phone number example from before, you do not have unlimited space when it comes to cache storage: storing a large amount of cache will take space on your disk.</p>
+<p>For example, from our stored cache from before:</p>
+<div class="sourceCode" id="cb306"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dir_i</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_ls.html">dir_info</a></span><span class="op">(</span><span class="st">"cache"</span><span class="op">)</span><span class="op">[</span>, <span class="st">"size"</span>, drop  <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dir_i</span><span class="op">)</span></span></code></pre></div>
+<pre><code># A tibble: 6 × 1
+         size
+  &lt;fs::bytes&gt;
+1         954
+2         440
+3         406
+4         939
+5         407
+6         922</code></pre>
+<p>Managing cache at a system level is a very vast, fascinating topic that we cannot cover here, but note that the most commonly accepted rule for deleting cache is called <strong>LRU</strong>, for <strong>Least Recently Used</strong>.
+The underlying principle of this approach is that users tend to need what they have needed recently: hence the more a piece of data has been used recently, the more likely it is that it will be needed soon.
+And this can be retrieved with:</p>
+<div class="sourceCode" id="cb308"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dir_at</span> <span class="op">&lt;-</span> <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/dir_ls.html">dir_info</a></span><span class="op">(</span><span class="st">"cache"</span><span class="op">)</span><span class="op">[</span>, <span class="st">"access_time"</span>, drop  <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">dir_at</span><span class="op">)</span></span></code></pre></div>
+<pre><code># A tibble: 6 × 1
+  access_time        
+  &lt;dttm&gt;             
+1 2024-03-12 15:47:36
+2 2024-03-12 15:47:36
+3 2024-03-12 15:47:36
+4 2024-03-12 15:47:36
+5 2024-03-12 15:47:36
+6 2024-03-12 15:47:36</code></pre>
+<p>Hence, when using cache, it might be interesting to periodically remove the oldest used cache, so that you can regain some space on the server running the application.</p>
+</div>
+</div>
+<div id="asynchronous-in-shiny" class="section level2" number="16.3">
+<h2>
+<span class="header-section-number">16.3</span> Asynchronous in <code>{shiny}</code><a class="anchor" aria-label="anchor" href="#asynchronous-in-shiny"><i class="fas fa-link"></i></a>
+</h2>
+<p>One of the drawbacks of <a href="https://shiny.rstudio.com/">shiny</a> is that as it is running on top of R, it is single threaded, meaning that each computation is run in sequence, one after the other.
+Well, at least natively, as methods have emerged to run pieces of code in parallel.</p>
+<div id="how-to" class="section level3" number="16.3.1">
+<h3>
+<span class="header-section-number">16.3.1</span> How to<a class="anchor" aria-label="anchor" href="#how-to"><i class="fas fa-link"></i></a>
+</h3>
+<p>To launch code blocks in parallel, we will use a combination of two packages, <a href="https://future.futureverse.org">future</a> <span class="citation">(<a href="references.html#ref-R-future">Bengtsson 2023</a>)</span> and <a href="https://rstudio.github.io/promises/">promises</a> <span class="citation">(<a href="references.html#ref-R-promises">Cheng 2021</a>)</span>, and a <code>reactiveValue()</code>.
+<a href="https://future.futureverse.org">future</a> is an R package whose main purpose is to allow users to send code to be run elsewhere, i.e. in another session, thread, or even on another machine.
+<a href="https://rstudio.github.io/promises/">promises</a>, on the other hand, is a package providing structure for handling asynchronous programming in R.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;If you are familiar with promises in JavaScript, &lt;code&gt;{promises}&lt;/code&gt; is an implementation of this structure into R.&lt;/p&gt;"><sup>64</sup></a></p>
+<div id="a.-asynchronous-for-cross-sessions-availability" class="section level4 unnumbered">
+<h4>A. Asynchronous for cross-sessions availability<a class="anchor" aria-label="anchor" href="#a.-asynchronous-for-cross-sessions-availability"><i class="fas fa-link"></i></a>
+</h4>
+<p>The first type of asynchronous programming in <a href="https://shiny.rstudio.com/">shiny</a> <strong>allows non-blocking programming in a cross-session context</strong>.
+In other words, it is a programming method which is useful in the context of running one <a href="https://shiny.rstudio.com/">shiny</a> session that is accessed by multiple users.
+Natively, in <a href="https://shiny.rstudio.com/">shiny</a>, if <em>user1</em> launches a 15-seconds computation, then <em>user2</em> has to wait for this computation to finish before launching their own 15-seconds computation, and <em>user3</em> has to wait the 15 seconds of <em>user1</em> plus the 15 seconds for user, etc.</p>
+<p>With <a href="https://future.futureverse.org">future</a> and <a href="https://rstudio.github.io/promises/">promises</a>, each long computation is sent to be run somewhere else, so when <em>user1</em> launches their 15-seconds computation, they are not blocking the R process for <em>user2</em> and <em>user3</em>.</p>
+<p>How does it work?<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;We’re providing a short introduction with key concepts, but for a more thorough introduction, please refer to the &lt;a href="https://rstudio.github.io/promises/index.html"&gt;online documentation&lt;/a&gt;.&lt;/p&gt;'><sup>65</sup></a>
+<a href="https://rstudio.github.io/promises/">promises</a> comes with two operators which will be useful in our case, <code>%...&gt;%</code> and <code>%...!%</code>: the first being “what happens when the <code><a href="https://future.futureverse.org/reference/future.html">future()</a></code> is solved?” (i.e. when the computation from the <code><a href="https://future.futureverse.org/reference/future.html">future()</a></code> is completed), and the second is “what happens if the <code><a href="https://future.futureverse.org/reference/future.html">future()</a></code> fails?” (i.e. what to do when the <code><a href="https://future.futureverse.org/reference/future.html">future()</a></code> returns an error).</p>
+<p>Here is an example of using this skeleton:</p>
+<div class="sourceCode" id="cb310"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/">promises</a></span><span class="op">)</span></span>
+<span><span class="co"># We're opening several R session (future specific)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span> </span>
+<span><span class="co"># We send our code to be run in another session</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span> <span class="op">(</span></span>
+<span>  <span class="co"># When the code is returned, we print the result</span></span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span> <span class="op">(</span></span>
+<span>  <span class="co"># If ever the code from the future() returns an error, </span></span>
+<span>  <span class="co"># we throw an error to the console</span></span>
+<span>  <span class="kw">function</span><span class="op">(</span><span class="va">error</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>If you run this in your console, you will see that you have access to the R console directly after launching the code.
+And a couple of seconds later (a little bit more than 3), the result of the <code>rnorm(5)</code> will be printed to the console.</p>
+<p>Note that you can also write a one-line function with <code>.</code> as a parameter, instead of building the full anonymous function (we will use this notation in the rest of the chapter):</p>
+<div class="sourceCode" id="cb311"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/">promises</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
+<span><span class="co"># Same code as before, using the anonymous notation</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span> </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span></code></pre></div>
+<p>Let’s port this to <a href="https://shiny.rstudio.com/">shiny</a>:</p>
+<div class="sourceCode" id="cb312"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/">promises</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># This will receive the output of the future</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">verbatimTextOutput</a></span><span class="op">(</span><span class="st">"rnorm"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">rnorm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Sending the rnorm to be run in another session</span></span>
+<span>    <span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span> </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span> </span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>If you have run this, it does not seem like a revolution: but trust us, the <code><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep()</a></code> is not blocking as it allows other users to launch the same computation at the same moment.</p>
+</div>
+<div id="b.-inner-session-asynchronicity" class="section level4 unnumbered">
+<h4>B. Inner-session asynchronicity<a class="anchor" aria-label="anchor" href="#b.-inner-session-asynchronicity"><i class="fas fa-link"></i></a>
+</h4>
+<p>In the previous section, we implemented cross-session asynchronicity, meaning that the code is non-blocking, but <strong>when two or more users access the same app: the code is still blocking at an inner-session level</strong>.
+In other words, the code in the <code><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint()</a></code> will still block the rest of the app for a single user.</p>
+<p>Let’s have a look at this code:</p>
+<div class="sourceCode" id="cb313"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># This will receive the output of the future</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">verbatimTextOutput</a></span><span class="op">(</span><span class="st">"rnorm"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># This plot will only be drawn when the future </span></span>
+<span>    <span class="co"># is resolved</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">rnorm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Sending the rnorm to be run in another session</span></span>
+<span>    <span class="co"># At this point, {shiny} is waiting for the future</span></span>
+<span>    <span class="co"># to be solved before doing anything else</span></span>
+<span>    <span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span> </span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span> </span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># This plot will only be drawn once the future is resolved</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>Here, you would expect the plot to be available before the <code><a href="https://rdrr.io/r/stats/Normal.html">rnorm()</a></code>, but it is not: <a href="https://rstudio.github.io/promises/">promises</a> is still blocking at an inner-session level, so elements are still rendered sequentially.
+To bypass that, we will need to use a <code>reactiveValue()</code> structure.</p>
+<div class="sourceCode" id="cb314"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/">promises</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># This will receive the output of the future</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">verbatimTextOutput</a></span><span class="op">(</span><span class="st">"rnorm"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># This plot will be drawn before the future is resolved</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># Initiating a reactiveValues that will receive the </span></span>
+<span>  <span class="co"># results from the future</span></span>
+<span>  <span class="va">rv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/reactiveValues.html">reactiveValues</a></span><span class="op">(</span></span>
+<span>    output <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span></span>
+<span>    <span class="co"># When the future is resolved, we assign the</span></span>
+<span>    <span class="co"># output to rv$output</span></span>
+<span>    <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">rv</span><span class="op">$</span><span class="va">output</span> <span class="op">&lt;-</span> <span class="va">result</span></span>
+<span>    <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span></span>
+<span>    <span class="co"># If ever the future outputs an error, we switch</span></span>
+<span>    <span class="co"># back to NULL for rv$output, and throw a warning</span></span>
+<span>    <span class="co"># with the error</span></span>
+<span>    <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">error</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="va">rv</span><span class="op">$</span><span class="va">output</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># output$rnorm will be printed whenever rv$output</span></span>
+<span>  <span class="co"># is available (i.e. after around 5 seconds)</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">rnorm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/req.html">req</a></span><span class="op">(</span><span class="va">rv</span><span class="op">$</span><span class="va">output</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># output$plot will be drawn immediately</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>Let’s detail this code step-by-step:</p>
+<ul>
+<li><p><code>rv &lt;- reactiveValues</code> creates a <code>reactiveValue()</code> that will contain <code>NULL</code>, and which will serve the content of <code><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint()</a></code> when the <code><a href="https://future.futureverse.org/reference/future.html">future()</a></code> is resolved.
+It is initiated as <code>NULL</code> so that the <code><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint()</a></code> is silent at launch.</p></li>
+<li><p><code>%...&gt;% rv$output &lt;- result %...!%</code> is the <a href="https://rstudio.github.io/promises/">promises</a> structure we have seen before.</p></li>
+<li><p><code>%...!% (function(error){ rv$output &lt;- NULL ; warning(e) })</code> is what happens when the <code>future({})</code> fails: we are setting the <code>rv$res</code> value back to <code>NULL</code> so that the <code><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint()</a></code> does not fail and prints an error in case of failure.</p></li>
+</ul>
+</div>
+<div id="c.-potential-pitfalls-of-asynchronous-shiny" class="section level4 unnumbered">
+<h4>C. Potential pitfalls of asynchronous <code>{shiny}</code><a class="anchor" aria-label="anchor" href="#c.-potential-pitfalls-of-asynchronous-shiny"><i class="fas fa-link"></i></a>
+</h4>
+<p>There is one thing to be aware of if you plan on using this async methodology: you are not in a sequential context anymore.
+Hence, the first <code>future({})</code> you will send is not necessarily the first you will get back.
+For example, if you send SQL requests to be run asynchronously and each call takes between 1 and 10 seconds to return, there is a chance that the first request to return will be the last one you sent.
+To handle that, we can adopt two different strategies, depending on what we need:</p>
+<ul>
+<li>We need only the last expression sent. In other words, if we send three expressions to be evaluated somewhere, we only need to get back the last one.
+To handle that, the best way is to have an id that is also sent to the future, and when the future comes back, we check that this id is the one we are expecting. If it is, we update the <code><a href="https://rdrr.io/pkg/shiny/man/reactiveValues.html">reactiveValues()</a></code>. If it is not, we ignore it.</li>
+</ul>
+<div class="sourceCode" id="cb315"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/">promises</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/tagList.html">tagList</a></span><span class="op">(</span></span>
+<span>    <span class="co"># This button trigger a future, we can click several times</span></span>
+<span>    <span class="co"># on it when the app is running</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/actionButton.html">actionButton</a></span><span class="op">(</span><span class="st">"go"</span>, <span class="st">"go"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># This will receive the output of the future</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/textOutput.html">verbatimTextOutput</a></span><span class="op">(</span><span class="st">"rnorm"</span><span class="op">)</span>,</span>
+<span>    <span class="co"># This plot will be drawn before the future is resolved</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
+<span>  <span class="va">input</span>, </span>
+<span>  <span class="va">output</span>, </span>
+<span>  <span class="va">session</span></span>
+<span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># In our reactiveValues, we also keep track</span></span>
+<span>  <span class="co"># of the latest sent id</span></span>
+<span>  <span class="va">rv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/reactiveValues.html">reactiveValues</a></span><span class="op">(</span></span>
+<span>    res <span class="op">=</span> <span class="cn">NULL</span>, </span>
+<span>    last_id <span class="op">=</span> <span class="fl">0</span></span>
+<span>  <span class="op">)</span></span>
+<span>  </span>
+<span>  </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/observeEvent.html">observeEvent</a></span><span class="op">(</span> <span class="va">input</span><span class="op">$</span><span class="va">go</span> , <span class="op">{</span></span>
+<span>    <span class="co"># When the user clicks on the button, the last_id</span></span>
+<span>    <span class="co"># is incremented of one</span></span>
+<span>    <span class="va">rv</span><span class="op">$</span><span class="va">last_id</span> <span class="op">&lt;-</span> <span class="va">rv</span><span class="op">$</span><span class="va">last_id</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="va">last_id</span> <span class="op">&lt;-</span> <span class="va">rv</span><span class="op">$</span><span class="va">last_id</span></span>
+<span>    </span>
+<span>    <span class="co"># We send the code to be run in the future. One out of </span></span>
+<span>    <span class="co"># two calls will sleep for 3 seconds</span></span>
+<span>    <span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">last_id</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>      <span class="co"># We return from the future the id of the current </span></span>
+<span>      <span class="co"># code block</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>        id <span class="op">=</span> <span class="va">last_id</span>,</span>
+<span>        res <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span></span>
+<span>      <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">{</span></span>
+<span>        <span class="co"># Printing to the console which future</span></span>
+<span>        <span class="co"># we are coming from</span></span>
+<span>        <span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span></span>
+<span>          <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"Back from %s"</span>, <span class="va">result</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
+<span>        <span class="op">)</span></span>
+<span>        <span class="co"># Change the value of `rv$res` only if </span></span>
+<span>        <span class="co"># the current id is the same as the last_id</span></span>
+<span>        <span class="kw">if</span> <span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">id</span> <span class="op">==</span> <span class="va">rv</span><span class="op">$</span><span class="va">last_id</span><span class="op">)</span><span class="op">{</span></span>
+<span>          <span class="va">rv</span><span class="op">$</span><span class="va">res</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">res</span></span>
+<span>        <span class="op">}</span></span>
+<span>      <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span></span>
+<span>      <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">error</span><span class="op">)</span><span class="op">{</span></span>
+<span>        <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="va">error</span><span class="op">)</span></span>
+<span>      <span class="op">}</span><span class="op">)</span></span>
+<span>    <span class="co"># Note that every render() function should return</span></span>
+<span>    <span class="co">#  something: here it will only work if the </span></span>
+<span>    <span class="co">#  renderPrint() returns a value, even if </span></span>
+<span>    <span class="co"># invisible. We use cat_rule to simulate that.</span></span>
+<span>    <span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cat_line.html">cat_rule</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span><span class="op">(</span><span class="st">"%s sent"</span>, <span class="va">rv</span><span class="op">$</span><span class="va">last_id</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># output$rnorm will be printed whenever rv$output</span></span>
+<span>  <span class="co"># is available, i.e. returned from the future</span></span>
+<span>  <span class="co">#  and the last one sent.</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">rnorm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderPrint</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/req.html">req</a></span><span class="op">(</span><span class="va">rv</span><span class="op">$</span><span class="va">res</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="co"># output$plot will be drawn immediately</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">iris</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<ul>
+<li>We need to treat the outputs in the order they are received. In that case, instead of waiting for the very last input, you will need to build a structure that will receive the output, check if this output is the “next in line”, store it if it is not, or return it if it is, and see if there is another output in the queue. This type of implementation is a little bit more complex, so we will not detail a full implementation in this chapter, but here is a small example of using <a href="https://github.com/r-lib/liteq#readme">liteq</a> <span class="citation">(<a href="references.html#ref-R-liteq">Csárdi 2019</a>)</span>.</li>
+</ul>
+<div class="sourceCode" id="cb316"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rstudio.github.io/promises/">promises</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://future.futureverse.org">future</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html">plan</a></span><span class="op">(</span><span class="va">multisession</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/liteq#readme">liteq</a></span><span class="op">)</span></span>
+<span><span class="co"># We create a small db in a tempfile()</span></span>
+<span><span class="va">temp_queue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">queue</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/liteq/man/ensure_queue.html">ensure_queue</a></span><span class="op">(</span><span class="st">"jobs"</span>, db <span class="op">=</span> <span class="va">temp_queue</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://future.futureverse.org/reference/future.html">future</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="co"># Faking a random computation time</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">)</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>        id <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        res <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...&gt;%</a></span> </span>
+<span>    <span class="co"># Whenever we receive an output, we add it to </span></span>
+<span>    <span class="co"># the queue database</span></span>
+<span>    <span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">results</span><span class="op">)</span><span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/liteq/man/publish.html">publish</a></span><span class="op">(</span></span>
+<span>        <span class="va">queue</span>, </span>
+<span>        title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">results</span><span class="op">$</span><span class="va">i</span><span class="op">)</span>, </span>
+<span>        message <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span></span>
+<span>          <span class="va">results</span><span class="op">$</span><span class="va">res</span>, </span>
+<span>          collapse <span class="op">=</span> <span class="st">","</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span> <span class="op"><a href="https://rstudio.github.io/promises/reference/pipes.html">%...!%</a></span> </span>
+<span>    <span class="co"># If ever we have an error, we return it as a warning</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/warning.html">warning</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.sleep.html">Sys.sleep</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co"># List the messages. As you can see, the entries in title</span></span>
+<span><span class="co"># are not in numerical order because they didn't came back</span></span>
+<span><span class="co"># in the same order as they were sent</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/liteq/man/list_messages.html">list_messages</a></span><span class="op">(</span><span class="va">queue</span><span class="op">)</span></span></code></pre></div>
+<pre><code>  id title status
+1  1     3  READY
+2  2     4  READY
+3  3     2  READY
+4  4     1  READY
+5  5     5  READY</code></pre>
+<p>For an example of an application built using <code>{promise}</code> and <a href="https://future.futureverse.org">future</a>, feel free to browse <a href="https://engineering-shiny.org/shinyfuture/">engineering-shiny.org/shinyfuture/</a>: there you will find an example of blocking and non-blocking processes.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></div>
+<div class="next"><a href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#optimizing-shiny-code"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="nav-link" href="#optimizing-r-code"><span class="header-section-number">16.1</span> Optimizing R code</a></li>
+<li>
+<a class="nav-link" href="#caching-elements"><span class="header-section-number">16.2</span> Caching elements</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#what-is-caching"><span class="header-section-number">16.2.1</span> What is caching?</a></li>
+<li><a class="nav-link" href="#native-caching-in-r"><span class="header-section-number">16.2.2</span> Native caching in R</a></li>
+<li><a class="nav-link" href="#caching-in-shiny"><span class="header-section-number">16.2.3</span> Caching in {shiny}</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#asynchronous-in-shiny"><span class="header-section-number">16.3</span> Asynchronous in {shiny}</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#how-to"><span class="header-section-number">16.3.1</span> How to</a></li></ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/16-optimizing-shiny-code.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/16-optimizing-shiny-code.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

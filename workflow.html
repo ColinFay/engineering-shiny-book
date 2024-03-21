@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 5 The Workflow | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="Building a robust, production-ready web application will be made easier by following a given workflow. The one we are advocating is divided in five steps: Design Prototype Build Strengthen Deploy...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 5 The Workflow | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="Building a robust, production-ready web application will be made easier by following a given workflow. The one we are advocating is divided in five steps: Design Prototype Build Strengthen Deploy...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 5 The Workflow | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="Building a robust, production-ready web application will be made easier by following a given workflow. The one we are advocating is divided in five steps: Design Prototype Build Strengthen Deploy...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="active" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="workflow" class="section level1" number="5">
+<h1>
+<span class="header-section-number">5</span> The Workflow<a class="anchor" aria-label="anchor" href="#workflow"><i class="fas fa-link"></i></a>
+</h1>
+<p>Building a robust, production-ready web application will be made easier by following a given workflow.
+The one we are advocating is divided in five steps:</p>
+<ul>
+<li>Design</li>
+<li>Prototype</li>
+<li>Build</li>
+<li>Strengthen</li>
+<li>Deploy</li>
+</ul>
+<p>In this chapter, we will give an brief overview of the different steps: the rest of the book will cover each of these steps in more depth.</p>
+<p>Of course, as with any workflow, this one is not a one-size-fits-all solution: all projects are unique, with technical requirements, specific planning and team of coder(s).
+But we think that following this workflow will help you get good habits when it comes to structuring your application project, even more if you know from day one that the application you are going to work on is a large application, whether in terms of codebase, complexity, or time.</p>
+<p>Note that the ideas behind this workflow, and its process, could be used outside of a <a href="https://shiny.rstudio.com/">shiny</a> project: it can be applied to any coding project, even outside of the R world.
+Of course, the tools presented in this book are R and <a href="https://shiny.rstudio.com/">shiny</a> specific, but the general ideas can be bootstrapped to be used outside of this context.</p>
+<div id="step-1-design" class="section level2" number="5.1">
+<h2>
+<span class="header-section-number">5.1</span> Step 1: Design<a class="anchor" aria-label="anchor" href="#step-1-design"><i class="fas fa-link"></i></a>
+</h2>
+<p>The first part of the workflow is the <strong>design</strong> part.</p>
+<p>This very first step is the one that happens before starting to code: it is the one where you are thinking about the general implementation and features of the application, and where you build the general roadmap for the coding process.
+During the process of designing, you will define how the application will be built: somewhere between users’ dreams, what is technically possible, and the time you have to build the application.</p>
+<p>This first step is not <a href="https://shiny.rstudio.com/">shiny</a> or R specific, it is something software engineers do for any software or web application: discuss with the clients,<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;We use the term “client” in a loose sense, meaning the person(s) who is/are ordering the application.&lt;/p&gt;"><sup>25</sup></a>
+the end users, and the developers who will work on the project.
+The idea with this first step is to get a clear idea of what everybody involved in the project wants/is able to do:</p>
+<ul>
+<li><p>From the client/end user’s point of view, this step involves working on getting a clear idea of what they want the application to do, and to confront this view with the developers to evaluate what is possible to do, how much time it will take to implement desired features, etc.</p></li>
+<li><p>From the developer team point of view, this step also involves getting a clear idea of what the client is asking, in other words it involves translating the requirements to technical specifications.
+For example, the client might write something like “Save the plot inside a database so that we can search for them later on”: from an application user point of view, this is a clear feature, from a developer point of view, this requirement can be translated in many ways.</p></li>
+</ul>
+<p>This first step actually implies a lot of thinking before coding.
+The main goal of this step is to spend time thinking about the application while you still do not have anything implemented, so that you do not discover blocking elements once it is too late, or at least once you already have written a lot of code.
+We have all been in a situation during a project where we tell ourselves: “I wish I had known this sooner”: working on designing the application before building it helps lowering the chances for this kind of bad surprise.</p>
+<p>This first part of the workflow will span three chapters:</p>
+<ul>
+<li><p>“UX Matters”, Chapter <a href="ux-matters.html#ux-matters">6</a>, is a chapter where we introduce the concepts of “User eXperience” (UX), and why it is a crucial concept when you are building your application.
+This chapter will cover the importance of simplicity when creating web applications, the danger of trying to implement too many components (aka “feature creep”), and finally we will introduce some general rules about web accessibility.
+These topics are vast topics, and a lot of literature and online resources exist for all these subjects: further readings and resources are linked inside each section.</p></li>
+<li><p>Chapter <a href="dont-rush-into-coding.html#dont-rush-into-coding">7</a>, “Don’t rush into coding” underlines why “coding first” might not be the best strategy when it comes to building a production application.
+We will also quickly introduce concept maps, and list some of the common questions you might want to ask the people involved in the project.</p></li>
+<li><p>Finally, this first part of the workflow covers a gentle introduction to CSS, which might be a crucial skill to master when it comes to sending an application to production: either your clients already have a CSS template that they want to include in the application, or they want their application to have the color and design that match the one from the company.
+Also, when building a professional application, chances are that you will want your app to stand out from the crowd: hence a little bit of CSS.
+This part is included in the design part because it is something that you might want to think about from the very beginning: for example, some companies have pre-existing <a href="https://shiny.rstudio.com/">shiny</a> templates, they might want to include specific fonts, logo, icons, etc.
+These are things better known before starting to code: it is easier to start working inside a <a href="https://shiny.rstudio.com/">shiny</a> template than migrating an existing code to a template.</p></li>
+</ul>
+</div>
+<div id="step-2-prototype" class="section level2" number="5.2">
+<h2>
+<span class="header-section-number">5.2</span> Step 2: Prototype<a class="anchor" aria-label="anchor" href="#step-2-prototype"><i class="fas fa-link"></i></a>
+</h2>
+<p>The <strong>prototype</strong> part is the one during which you will build the front-end and the back-end, but separately.</p>
+<p>As you may know, a <a href="https://shiny.rstudio.com/">shiny</a> application is an interface (the front-end, or “UI”) used to communicate information to the end users that are computed on the server side (the back-end, or “server”).</p>
+<p>To start on solid ground, you need to build the two (front and back) separately.</p>
+<p>On one hand, work on the general appearance, without working on any actual algorithmic implementation: position of the inputs and outputs, general design, interactions, etc.; everything that does not rely on computation on the back-end.
+This “UI first” approach will be made possible for <a href="https://shiny.rstudio.com/">shiny</a> with notably one package, <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> <span class="citation">(<a href="references.html#ref-R-shinipsum">Fay and Rochette 2023b</a>)</span>.</p>
+<p>On the other hand, you (or someone from your team), will be working on building the back-end logic, which comprises the actual outputs that are going to be displayed, the algorithm that will compute results, and all the elements that do not need an interactive runtime to work.
+For this point, you can use what we call a “Rmd-first” approach, by combining R functions with the writing of vignettes that describe the internals of the application.
+This part of the workflow will be developed in two chapters:</p>
+<ul>
+<li><p>Chapter (<a href="setting-up-for-success.html#setting-up-for-success">8</a>), “Setting up for success with <a href="https://github.com/ThinkR-open/golem">golem</a>”, will cover the basics of getting started with the <a href="https://github.com/ThinkR-open/golem">golem</a> package so that you can start your prototyped application with solid foundation.</p></li>
+<li><p>Chapter (<a href="building-ispum-app.html#building-ispum-app">9</a>), “Building an “ipsum-app”” will cover the importance of prototyping when it comes to building applications, then present <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> and <a href="https://github.com/Thinkr-open/fakir">fakir</a>, and finally will introduce how you can use the “Rmd First” methodology to prototype your application back-end.</p></li>
+</ul>
+</div>
+<div id="step-3-build" class="section level2" number="5.3">
+<h2>
+<span class="header-section-number">5.3</span> Step 3: Build<a class="anchor" aria-label="anchor" href="#step-3-build"><i class="fas fa-link"></i></a>
+</h2>
+<p>The <strong>build</strong> part is the one where you will combine the business (or back-end) logic with the front-end.
+In this third part, you will work on the core engine of the application, making the business logic work inside the interactive logic of your application.</p>
+<p>This step of the workflow is cover in <em>Building app with <a href="https://github.com/ThinkR-open/golem">golem</a></em> (<a href="build-app-golem.html#build-app-golem">10</a>), a chapter that presents the various functions you can use to build your application, <em>i.e</em> the one you will be using to combine your back-end and front-end.</p>
+<p>In this step, we will cover:</p>
+<ul>
+<li>How to handle dependencies in your project, <em>i.e</em> how to use external libraries inside your project</li>
+<li>How to organize modules and functions inside your project</li>
+<li>How to add tests for the back-end of your application (testing will be covered in more depth in Step 4)</li>
+<li>How to document your application and its codebase, and how to add code coverage and continuous integration</li>
+<li>How to leverage the internal <code>dev</code> functions from <a href="https://github.com/ThinkR-open/golem">golem</a> to modify the behavior of specific functions based on an <code>option()</code>
+</li>
+</ul>
+</div>
+<div id="step-4-strengthen" class="section level2" number="5.4">
+<h2>
+<span class="header-section-number">5.4</span> Step 4: Strengthen<a class="anchor" aria-label="anchor" href="#step-4-strengthen"><i class="fas fa-link"></i></a>
+</h2>
+<p>The <strong>strengthen</strong> part covers how to ensure your application is immortal, in the sense that we defined in Chapter <a href="successful-shiny-app.html#successful-shiny-app">1</a> of this book.</p>
+<p>In this part, we will go through unit tests, reproducible development environments, version control, and continuous integration in the context of <a href="https://shiny.rstudio.com/">shiny</a> applications.
+Building a solid testing suite is crucial to the success of a project, as it allows a project to be stable in the long run, be it when you will want to add new feature or refactor existing code:</p>
+<blockquote>
+<p>Refactoring requires we be able to confidently ensure that behavior remains identical at every iteration. We can increase our confidence that nothing has changed by writing a suite of tests (unit, integration, end-to-end), and we should not seriously consider moving forward with any refactoring effort until we’ve established sufficient test coverage.</p>
+<p><em>Refactoring at Scale</em> <span class="citation">(<a href="references.html#ref-lemaire2020">Lemaire 2020</a>)</span></p>
+</blockquote>
+<p>This step of the workflow will span over chapters.</p>
+<ul>
+<li><p>The first one, “Build yourself a safety net” (Chapter <a href="build-yourself-safety-net.html#build-yourself-safety-net">11</a>), details how to build a testing environment for your <a href="https://shiny.rstudio.com/">shiny</a> application, be it for testing the back-end or the front-end.
+In this chapter, you will be introduced to <a href="https://testthat.r-lib.org">testthat</a> for testing your application back-end, tools that are more linked to testing the front-end like NodeJS <code>puppeteer</code> module, <a href="https://github.com/rstudio/shinytest">shinytest</a> and <a href="https://github.com/ColinFay/crrry">crrry</a> for testing interactive logic, <a href="https://rstudio.github.io/shinyloadtest/">shinyloadtest</a> and <a href="https://github.com/ColinFay/dockerstats">dockerstats</a> for testing your application load.
+This chapter will also cover <a href="https://rstudio.github.io/renv/">renv</a> and <code>Docker</code>, two essential tools for developing in a reproducible environment.</p></li>
+<li><p>In Chapter <a href="version-control.html#version-control">12</a>, “Version Control”, you will be introduced to <code>git</code> and to automated testing using continuous integration (CI) platforms like Travis CI or GitHub Actions.</p></li>
+</ul>
+</div>
+<div id="step-5-deploy" class="section level2" number="5.5">
+<h2>
+<span class="header-section-number">5.5</span> Step 5: Deploy<a class="anchor" aria-label="anchor" href="#step-5-deploy"><i class="fas fa-link"></i></a>
+</h2>
+<p>To <strong>deploy</strong> is to send your application into production once it is built.</p>
+<p>Being exhaustive here would be an impossible task: there are countless ways to make your application accessible to its targeted users, but we will try to cover some basics in this part.
+And of course, where and how you will be deploying your application depends on a lot of parameters.
+For example, who are the end users, and how do they want to use your application?
+If the end users are familiar with R and use it on a daily basis, they might be looking for an application that runs with <code><a href="https://rdrr.io/r/base/library.html">library(app)</a></code>, <em>i.e</em> they need the application to be available as an R package they can install on their machine.
+If the end users are not coders, they might need the application to be available only as a web application, so they just have to open a browser and navigate to a URL.
+Both these cases raise other questions: how can you make the package available on a repository so that R users can get it with <code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages()</a></code>?
+If the application is to be made available on a URL, how will it be deployed?
+What deployment server is available to you, or to the company ordering the application?
+These questions (and more) will be covered in the <strong>deploy</strong> part of this book.</p>
+<p>In this part, we will present a series of methods to prepare your application to be deployed on various environments, notably:</p>
+<ul>
+<li>Sharing your application as a package so that it can be installed manually, through GitHub, or shared on a package repository like the CRAN or BioConductor</li>
+<li>Sending it to an RStudio platform</li>
+<li>Building a Docker image to serve your app on a cloud provider</li>
+</ul>
+<p>This step of the workflow is covered in the Chapter <a href="deploy.html#deploy">13</a>, “Deploy your application”.</p>
+
+</div>
+</div>
+
+
+
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></div>
+<div class="next"><a href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#workflow"><span class="header-section-number">5</span> The Workflow</a></li>
+<li><a class="nav-link" href="#step-1-design"><span class="header-section-number">5.1</span> Step 1: Design</a></li>
+<li><a class="nav-link" href="#step-2-prototype"><span class="header-section-number">5.2</span> Step 2: Prototype</a></li>
+<li><a class="nav-link" href="#step-3-build"><span class="header-section-number">5.3</span> Step 3: Build</a></li>
+<li><a class="nav-link" href="#step-4-strengthen"><span class="header-section-number">5.4</span> Step 4: Strengthen</a></li>
+<li><a class="nav-link" href="#step-5-deploy"><span class="header-section-number">5.5</span> Step 5: Deploy</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/05-workflow.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/05-workflow.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

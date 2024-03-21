@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 9 Building an “ipsum-app” | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="9.1 Prototyping is crucial  9.1.1 Prototype, then polish  Prototyping first may help keep you from investing far too much time for marginal gains. The Art of UNIX Programming (Raymond 2003) And...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 9 Building an “ipsum-app” | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="9.1 Prototyping is crucial  9.1.1 Prototype, then polish  Prototyping first may help keep you from investing far too much time for marginal gains. The Art of UNIX Programming (Raymond 2003) And...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 9 Building an “ipsum-app” | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="9.1 Prototyping is crucial  9.1.1 Prototype, then polish  Prototyping first may help keep you from investing far too much time for marginal gains. The Art of UNIX Programming (Raymond 2003) And...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="active" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="building-ispum-app" class="section level1" number="9">
+<h1>
+<span class="header-section-number">9</span> Building an “ipsum-app”<a class="anchor" aria-label="anchor" href="#building-ispum-app"><i class="fas fa-link"></i></a>
+</h1>
+<div id="prototyping-is-crucial" class="section level2" number="9.1">
+<h2>
+<span class="header-section-number">9.1</span> Prototyping is crucial<a class="anchor" aria-label="anchor" href="#prototyping-is-crucial"><i class="fas fa-link"></i></a>
+</h2>
+<div id="prototype-then-polish" class="section level3" number="9.1.1">
+<h3>
+<span class="header-section-number">9.1.1</span> Prototype, then polish<a class="anchor" aria-label="anchor" href="#prototype-then-polish"><i class="fas fa-link"></i></a>
+</h3>
+<blockquote>
+<p>Prototyping first may help keep you from investing far too much time for marginal gains.</p>
+<p><em>The Art of UNIX Programming</em> <span class="citation">(<a href="references.html#ref-ericraymond2003">Raymond 2003</a>)</span></p>
+</blockquote>
+<p>And yet another rule from <em>The Art of Unix Programming</em>: “Rule of Optimization: Prototype before polishing. <strong>Get it working before you optimize it</strong>.”
+Getting things to work before trying to optimize the app is always a good approach:</p>
+<ul>
+<li>
+<strong>Making things work before working on low-level optimization makes the whole engineering process easier</strong>: having a “minimal viable product” that works, even if slowly and not perfectly, gives a stronger sense of success to the project. For example if you are building a vehicle, it feels more of a success to start with a skateboard than with a wheel: you quickly have a product that can be used to move, not waiting for the end of the project before finally having something useful. Building a skateboard helps the developer maintain a sense of accomplishment throughout the life of the project: the quicker you can have a running program, a MVP (Minimum Viable Product, as seen on Figure <a href="building-ispum-app.html#fig:09-prototyping-1">9.1</a>), the better.</li>
+</ul>
+<div style="page-break-after: always;"></div>
+<blockquote>
+<p>One of the really nice things about running your program frequently is that you get to see it running, which is fun, and that’s what programming is all about.</p>
+<p><em>The Unicorn Project</em> <span class="citation">(<a href="references.html#ref-genekim2019">Kim 2019</a>)</span></p>
+</blockquote>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:09-prototyping-1"></span>
+<img src="img/mvp.png" alt="Building a minimum viable product (MVP)." width="100%"><p class="caption">
+FIGURE 9.1: Building a minimum viable product (MVP).
+</p>
+</div>
+<div style="page-break-after: always;"></div>
+<ul>
+<li>
+<strong>Abstraction is hard, and makes the codebase harder to work with</strong>. You have heard a lot that if you are copying and pasting something more than twice, you should write a function. And with <a href="https://shiny.rstudio.com/">shiny</a>, if you are writing a piece of the app more than twice, you should write modules. But while these kinds of abstractions are elegant and optimized, they can make the software harder to work on while building it. So before focusing on turning something into a function, make it work first. As said in <em>R for Data Science</em> <span class="citation">(<a href="references.html#ref-hadleywickham2017">Wickham and Grolemund 2017</a>)</span> about abstraction with <a href="https://purrr.tidyverse.org/">purrr</a> <span class="citation">(<a href="references.html#ref-R-purrr">Wickham and Henry 2023</a>)</span>:</li>
+</ul>
+<blockquote>
+<p>Once you master these functions, you’ll find it takes much less time to solve iteration problems.
+But you should never feel bad about using a for loop instead of a map function.
+The map functions are a step up a tower of abstraction, and it can take a long time to get your head around how they work.
+The important thing is that you solve the problem that you’re working on, not write the most concise and elegant code (although that’s definitely something you want to strive towards!).</p>
+<p><em>R for Data Science - 21.5 The map functions</em> <span class="citation">(<a href="references.html#ref-hadleywickham2017">Wickham and Grolemund 2017</a>)</span></p>
+</blockquote>
+<p>As a small example, we can refer to the binding module from <a href="https://github.com/colinfay/hexmake">hexmake</a> <span class="citation">(<a href="references.html#ref-R-hexmake">Fay 2023g</a>)</span>: this module manipulates namespaces, inputs, and <code>session</code> to automatically bind inputs to the R6 object containing the image (see implementation <a href="https://github.com/ColinFay/hexmake/blob/master/R/mod_binder.R#L29">here</a>, <a href="https://github.com/ColinFay/hexmake/blob/master/R/utils_server.R#L2">here</a> and <a href="https://github.com/ColinFay/hexmake/blob/master/R/mod_left.R#L60">here</a>).
+That’s an elegant solution: instead of duplicating content, we use functions to automatically bind events.
+But that is a higher level of abstraction: we manipulate different levels of namespacing and inputs, making it harder to reason about when you have to change the codebase.</p>
+<ul>
+<li><p>It’s hard to identify upfront the real bottlenecks of the app.
+As long as the app is not in a working state, it is very hard to identify the real pieces of code that need to be optimized.
+Chances are that if you ask yourself upfront what the app bottlenecks will be, you will not aim right.
+Instead of losing time focusing on specific pieces of code you think need to be optimized, start by having something that works, then optimize the code.
+In other words, “Make It Work. Make It Right. Make It Fast”, (<a href="https://wiki.c2.com/?MakeItWorkMakeItRightMakeItFast">KentBeck</a>).</p></li>
+<li><p>It’s easier to spot mistakes when you have something that can run.
+If a piece of software runs, it is straightforward to check if a change in the codebase breaks the software or not: it either still runs or not.</p></li>
+</ul>
+</div>
+<div id="the-ui-first-approach" class="section level3" number="9.1.2">
+<h3>
+<span class="header-section-number">9.1.2</span> The “UI first” approach<a class="anchor" aria-label="anchor" href="#the-ui-first-approach"><i class="fas fa-link"></i></a>
+</h3>
+<p>Using what can be called a “UI first” approach when building an app is in most cases the safest way to go.
+And for two main reasons.</p>
+<div id="a.-agreeing-on-specifications" class="section level4 unnumbered">
+<h4>A. Agreeing on specifications<a class="anchor" aria-label="anchor" href="#a.-agreeing-on-specifications"><i class="fas fa-link"></i></a>
+</h4>
+<p>First of all, it <strong>helps everybody involved in the application to agree on what the app is supposed to do, and once the UI is set, there should be no “surprise implementation”</strong>.
+Well, at least, this is the best way to reduce the number of changes in the app, as the sooner we have a global idea of the app, the better.
+It is hard to implement a core new feature once the app is 90% finished, while it would have been way easier to implement it if it had been detected from the very start.
+Indeed, implementing core features once the app is very advanced can be critical, as our application might not have been thought to work the way it now needs to work, so adding certain elements might lead to a need for change in the core architecture of the app.
+Once we agree on what elements compose the app, there should be no sudden “oh, the app needs to do that thing now, sorry I hadn’t realized that before”.</p>
+<p>We cannot blame the person ordering the app for not realizing everything needed to build the app: it is really hard to have a mental model of the whole software when we are writing specifications, not to mention when reading them.
+On the other hand, having a mock application with the UI really helps us realize what the app is doing and how it works, and to agree with the developer that this is actually what we want our application to do (or realize that this is not something we actually need).</p>
+<p>Prototyping the UI first should require the least possible computation from the server side of your application.
+You focus on the appearance of the app: buttons, figures, tables, and graphs, and how they interact with each other.
+<strong>At that stage of the design process, you will not be focusing on the correctness of the results or graphs: you will be placing elements on the front-end so that you can be sure that everything is there, even if some buttons do not trigger anything</strong>.
+At that point, the idea is to get the people who are ordering the app to think about what they actually need, and there might be a question like “oh, where is the button to download the results in a pdf?”.
+And at that precise moment is the perfect time for a change in specification.</p>
+</div>
+<div id="b.-organizing-work" class="section level4 unnumbered">
+<h4>B. Organizing work<a class="anchor" aria-label="anchor" href="#b.-organizing-work"><i class="fas fa-link"></i></a>
+</h4>
+<p>A pre-defined UI allows every person involved in the coding process to know which part of the app they are working on, and to be sure that you do not forget anything.
+As you might be working on the app as a team, you will need to find a strategy for efficiently splitting the work among coders.
+<strong>It’s much easier to work on a piece of the app you can visually identify and integrate in a complete app scenario</strong>.
+In other words, it is easier to be told “you will be working on the ‘Summary’ panel from that mock UI” than “you will be working on bullet points 45 to 78 of the specifications”.</p>
+</div>
+</div>
+</div>
+<div id="prototyping-shiny" class="section level2" number="9.2">
+<h2>
+<span class="header-section-number">9.2</span> Prototyping <code>{shiny}</code><a class="anchor" aria-label="anchor" href="#prototyping-shiny"><i class="fas fa-link"></i></a>
+</h2>
+<p>In the next section, you will be introduced to two packages that can be used when prototyping a user interface: <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> <span class="citation">(<a href="references.html#ref-R-shinipsum">Fay and Rochette 2023b</a>)</span> and <a href="https://github.com/Thinkr-open/fakir">fakir</a> <span class="citation">(<a href="references.html#ref-R-fakir">Fay and Rochette 2023a</a>)</span>.</p>
+<div id="fast-ui-prototyping-with-shinipsum" class="section level3" number="9.2.1">
+<h3>
+<span class="header-section-number">9.2.1</span> Fast UI prototyping with <code>{shinipsum}</code><a class="anchor" aria-label="anchor" href="#fast-ui-prototyping-with-shinipsum"><i class="fas fa-link"></i></a>
+</h3>
+<p>When prototyping the UI for an application, we will not be focusing on building the actual computation: <strong>what we need is to create a draft with visual components, so that we can have visual clues about the end result</strong>.
+To do that, you can use the <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> package, which has been designed to generate random <a href="https://shiny.rstudio.com/">shiny</a> <span class="citation">(<a href="references.html#ref-R-shiny">Chang et al. 2022</a>)</span> elements.
+If you are familiar with “lorem ipsum”, the fake text generator that is used in software design as a placeholder for text, the idea is the same: generating placeholders for <a href="https://shiny.rstudio.com/">shiny</a> outputs.
+For an example of an application built with <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a>, please visit <a href="https://engineering-shiny.org/shinipsum/">engineering-shiny.org/shinipsum/</a>, or <a href="https://engineering-shiny.org/golemhtmltemplate/">engineering-shiny.org/golemhtmltemplate/</a>: both these applications should look a little bit different every time you open them!</p>
+<p><a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> can be installed from CRAN with:</p>
+<div class="sourceCode" id="cb115"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"shinipsum"</span><span class="op">)</span></span></code></pre></div>
+<p>You can install this package from GitHub with:</p>
+<div class="sourceCode" id="cb116"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"Thinkr-open/shinipsum"</span><span class="op">)</span></span></code></pre></div>
+<p>This package includes a series of functions that generates random placeholders.
+For example, <code><a href="https://rdrr.io/pkg/shinipsum/man/random_ggplot.html">random_ggplot()</a></code> generates random <a href="https://ggplot2.tidyverse.org">ggplot2</a> <span class="citation">(<a href="references.html#ref-R-ggplot2">Wickham, Chang, et al. 2023</a>)</span> elements.
+If we run this code two times, we should get different results, as seen on Figure <a href="building-ispum-app.html#fig:09-prototyping-5">9.2</a> and Figure <a href="building-ispum-app.html#fig:09-prototyping-6">9.3</a>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Well, there is a probability that we will get the same plot twice, but that is the beauty of randomness.&lt;/p&gt;"><sup>37</sup></a></p>
+<div class="sourceCode" id="cb117"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
+
+<div class="sourceCode" id="cb118"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_ggplot.html">random_ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Random plot"</span><span class="op">)</span> </span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:09-prototyping-5"></span>
+<img src="engineering-production-grade-shiny-apps_files/figure-html/09-prototyping-5-1.png" alt="A random plot." width="100%"><p class="caption">
+FIGURE 9.2: A random plot.
+</p>
+</div>
+
+<div class="sourceCode" id="cb119"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_ggplot.html">random_ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Random plot"</span><span class="op">)</span> </span></code></pre></div>
+<pre><code>Bin width defaults to 1/30 of the range of the data.
+Pick better value with `binwidth`.</code></pre>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:09-prototyping-6"></span>
+<img src="engineering-production-grade-shiny-apps_files/figure-html/09-prototyping-6-1.png" alt="Another random plot." width="100%"><p class="caption">
+FIGURE 9.3: Another random plot.
+</p>
+</div>
+<p>Of course, the idea is to combine this with a <a href="https://shiny.rstudio.com/">shiny</a> interface, for example, <code><a href="https://rdrr.io/pkg/shinipsum/man/random_ggplot.html">random_ggplot()</a></code> will be used with a <code><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot()</a></code> and <code><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput()</a></code>.
+And as we want to prototype but still be close to what the app might look like, these functions take arguments that can shape the output: for example, <code><a href="https://rdrr.io/pkg/shinipsum/man/random_ggplot.html">random_ggplot()</a></code> has a <code>type</code> parameter that can help you select a specific <a href="https://ggplot2.tidyverse.org">ggplot2</a> geom.</p>
+<div class="sourceCode" id="cb121"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://shiny.rstudio.com/">shiny</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rstudio/DT">DT</a></span><span class="op">)</span></span>
+<span><span class="va">ui</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/fluidPage.html">fluidPage</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html">h2</a></span><span class="op">(</span><span class="st">"A Random DT"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/DT/man/dataTableOutput.html">DTOutput</a></span><span class="op">(</span><span class="st">"data_table"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html">h2</a></span><span class="op">(</span><span class="st">"A Random Plot"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/plotOutput.html">plotOutput</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rstudio.github.io/htmltools/reference/builder.html">h2</a></span><span class="op">(</span><span class="st">"A Random Text"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderTable.html">tableOutput</a></span><span class="op">(</span><span class="st">"text"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">server</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input</span>, <span class="va">output</span>, <span class="va">session</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">data_table</span> <span class="op">&lt;-</span> <span class="fu">DT</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DT/man/dataTableOutput.html">renderDT</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_DT.html">random_DT</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPlot.html">renderPlot</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_ggplot.html">random_ggplot</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span>  <span class="va">output</span><span class="op">$</span><span class="va">text</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/shiny/man/renderPrint.html">renderText</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_text.html">random_text</a></span><span class="op">(</span>nwords <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/shiny/man/shinyApp.html">shinyApp</a></span><span class="op">(</span><span class="va">ui</span>, <span class="va">server</span><span class="op">)</span></span></code></pre></div>
+<p>Figure <a href="building-ispum-app.html#fig:09-prototyping-8">9.4</a> is a screenshot of this application.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:09-prototyping-8"></span>
+<img src="img/shinipsumapp.png" alt="An app built with {shinipsum}." width="100%"><p class="caption">
+FIGURE 9.4: An app built with <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a>.
+</p>
+</div>
+<p>Other <a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> functions include:</p>
+<ul>
+<li>tables:</li>
+</ul>
+<div class="sourceCode" id="cb122"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_table.html">random_table</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">3</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></code></pre></div>
+<pre><code>  day time  temp
+1 346  840 36.33
+2 346  850 36.34
+3 346  900 36.35</code></pre>
+<ul>
+<li>print outputs:</li>
+</ul>
+<div class="sourceCode" id="cb124"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/shinipsum/man/random_print.html">random_print</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span></span></code></pre></div>
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  datasets::airquality$Ozone
+W = 0.88, p-value = 3e-08</code></pre>
+<p>and text, image, <code>ggplotly</code>, <code>dygraph</code>, and <code>DT</code>.</p>
+<p><a href="https://github.com/Thinkr-open/shinipsum">shinipsum</a> is also a good tool if you want to demonstrate what a given UI framework will look like if used in <a href="https://shiny.rstudio.com/">shiny</a>.
+This is, for example, what you find with <code>{golemhtmltemplate}</code>, available at <a href="https://engineering-shiny.org/golemhtmltemplate/">engineering-shiny.org/golemhtmltemplate/</a>, which uses a W3 web page template.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;This application is also a demonstration of how to build a &lt;code&gt;{golem}&lt;/code&gt; application using &lt;code&gt;htmltemplate()&lt;/code&gt;.&lt;/p&gt;"><sup>38</sup></a></p>
+</div>
+<div id="using-fakir-for-fake-data-generation" class="section level3" number="9.2.2">
+<h3>
+<span class="header-section-number">9.2.2</span> Using <code>{fakir}</code> for fake data generation<a class="anchor" aria-label="anchor" href="#using-fakir-for-fake-data-generation"><i class="fas fa-link"></i></a>
+</h3>
+<p>Generating random placeholders for <a href="https://shiny.rstudio.com/">shiny</a> might not be enough: maybe you also need example datasets.</p>
+<p>This can be accomplished using the <a href="https://github.com/Thinkr-open/fakir">fakir</a> package, which was primarily created to provide fake datasets for R tutorials and exercises, but that can easily be used inside a <a href="https://shiny.rstudio.com/">shiny</a> application.</p>
+<p>At the time of writing these lines, the package is only available on GitHub, and can be installed with:</p>
+<div class="sourceCode" id="cb126"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"Thinkr-open/fakir"</span><span class="op">)</span></span></code></pre></div>
+<p>This package contains three datasets that are randomly generated when you call the corresponding functions:</p>
+<ul>
+<li><p><code><a href="https://rdrr.io/pkg/fakir/man/fake_base_clients.html">fake_base_clients()</a></code> generates a fake dataset for a ticketing service.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/fakir/man/fake_sondage_answers.html">fake_sondage_answers()</a></code> is a fake survey about transportation.</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/fakir/man/fake_visits.html">fake_visits()</a></code> is a fake dataset for the visits on a website.</p></li>
+</ul>
+<div class="sourceCode" id="cb127"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Thinkr-open/fakir">fakir</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/fakir/man/fake_visits.html">fake_visits</a></span><span class="op">(</span>from <span class="op">=</span> <span class="st">"2017-01-01"</span>, to <span class="op">=</span> <span class="st">"2017-01-31"</span><span class="op">)</span></span></code></pre></div>
+<pre><code># A tibble: 31 × 8
+   timestamp   year month   day  home about  blog
+ * &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+ 1 2017-01-01  2017     1     1   369   220   404
+ 2 2017-01-02  2017     1     2   159   250   414
+ 3 2017-01-03  2017     1     3   436   170   498
+ 4 2017-01-04  2017     1     4    NA   258   526
+ 5 2017-01-05  2017     1     5   362    NA   407
+ 6 2017-01-06  2017     1     6   245   145   576
+ 7 2017-01-07  2017     1     7    NA    NA   484
+ 8 2017-01-08  2017     1     8   461   103   441
+ 9 2017-01-09  2017     1     9   337   113   673
+10 2017-01-10  2017     1    10    NA   169   308
+# ℹ 21 more rows
+# ℹ 1 more variable: contact &lt;int&gt;</code></pre>
+<p>The idea with these datasets is to combine various formats that can reflect “real-life” datasets: they contain dates, numeric and character variables, and have missing values.
+They can also be manipulated with the included <a href="https://r-spatial.github.io/sf/">sf</a> <span class="citation">(<a href="#ref-R-sf"><strong>R-sf?</strong></a>)</span> geographical dataset <code>fra_sf</code> allowing for map creation.</p>
+<p>Fake datasets created with <a href="https://github.com/Thinkr-open/fakir">fakir</a> can be used to build light examples on the use of the inputs, for filters or interactive maps, or as examples for the internal functions and their corresponding documentation.</p>
+</div>
+</div>
+<div id="proto-rmdfirst" class="section level2" number="9.3">
+<h2>
+<span class="header-section-number">9.3</span> Building with RMarkdown<a class="anchor" aria-label="anchor" href="#proto-rmdfirst"><i class="fas fa-link"></i></a>
+</h2>
+<p>While on one side you are building the user interface, you (or someone from your team) can start working on the back-end implementation.
+This implementation should be done out of any reactive logic: the back-end should not depend on any reactive context.
+And because documentation is gold, you should start with writing the back-end documentation directly as package documentation:</p>
+<ul>
+<li><p>Inside your Vignettes folder: call <code><a href="https://usethis.r-lib.org/reference/use_vignette.html">usethis::use_vignette()</a></code> to create the skeleton for a Vignette, which will then be used as package documentation.</p></li>
+<li><p>In the <code>inst/</code> folder, if you prefer not including these RMarkdown files as documentation for the end package.</p></li>
+</ul>
+<p>Or what we call “Rmd-first”.</p>
+<div id="define-the-content-of-the-application" class="section level3" number="9.3.1">
+<h3>
+<span class="header-section-number">9.3.1</span> Define the content of the application<a class="anchor" aria-label="anchor" href="#define-the-content-of-the-application"><i class="fas fa-link"></i></a>
+</h3>
+<p><strong>Rmarkdown files are the perfect spot to sandbox the back-end of your application: inside the file, you don’t have to think about any reactive behavior</strong>, as you are just working with plain old R code: data wrangling operations, multi-parameter-based models, summary tables outputs, graphical outputs, etc.</p>
+<p>And the nice thing is that you can share the output of the rendered file as an HTML or PDF to either your client or boss, or anyone involved in the project.
+That way, <strong>you can focus on the core algorithm</strong>, not some UI implementation like “I want the button to be blue” when what you need to know is if the output of the model is correct.
+In other words, you are applying the rule of the separation of concerns, i.e. you help focus on one part of the application without adding any cognitive load to the person “reading” the outputs.
+And, last but not least, if you have to implement changes to the back-end functions, it is way easier to check and to share in a static file than in an application.</p>
+<p>When doing that, the best way is again to separate things: do not be afraid of writing multiple RMarkdown files, one for each part of the end application.
+Again, this will help everybody focus on what matters: be it you, your team, or the person ordering the application.</p>
+<p>Building the back-end in Rmd files is also a <strong>good way to make the back-end “application independent”</strong>, in the sense that it helps in documenting how the algorithms you have been building can be used outside of the application.
+In many cases, when you are building an application, you are creating functions that contain business logic/domain expertise, and that can, in fact, be used outside of the application.
+<strong>Writing these functions and how they work together forces you to think about these functions, and also gives a good starting point for anybody familiar with R that would want to start using this back-end toolkit</strong>.
+Of course, as you are building your application as a package, it is way easier now: you can share a package with the application inside it, along with a function to launch the app, but also functions that can be used outside.</p>
+<p>And if you need some data to use as an example, feel free to pick one from <a href="https://github.com/Thinkr-open/fakir">fakir</a>!</p>
+</div>
+<div id="using-the-rmd-files-as-a-laboratory-notebook" class="section level3" number="9.3.2">
+<h3>
+<span class="header-section-number">9.3.2</span> Using the Rmd files as a laboratory notebook<a class="anchor" aria-label="anchor" href="#using-the-rmd-files-as-a-laboratory-notebook"><i class="fas fa-link"></i></a>
+</h3>
+<p>Rmd can also be used as the place to keep track of what you have in mind while creating the application: most of the time, you will create the functions inside the <code>R/</code> folder, but it might not be the perfect place to document your thought process.
+On the other hand, using Markdown as a kind of “software laboratory notebook” to keep track of your idea is a good way to document all the choices you have made about your data wrangling, models, visualization, so that you can use it as a common knowledge-base throughout the application life: you can share this with your client, with the rest of your team, or with anybody involved in the project.</p>
+<p>And also, developing in multiple Rmd files helps the separation of work between multiple developers, and will reduce code conflicts during development.</p>
+</div>
+<div id="rmd-vignettes-and-documentation-first" class="section level3" number="9.3.3">
+<h3>
+<span class="header-section-number">9.3.3</span> Rmd, Vignettes, and documentation first<a class="anchor" aria-label="anchor" href="#rmd-vignettes-and-documentation-first"><i class="fas fa-link"></i></a>
+</h3>
+<p>Working with the <a href="https://github.com/ThinkR-open/golem">golem</a> <span class="citation">(<a href="references.html#ref-R-golem">Fay, Guyader, Rochette, et al. 2023</a>)</span> framework implies that you will build the application as an R package.
+And of course, an R package implies writing documentation: one of the main goals of the Vignettes, in an R package, is to document how to use the package.
+And the good news is that when checking a package, i.e. when running <code>check()</code> from <a href="https://devtools.r-lib.org/">devtools</a> <span class="citation">(<a href="references.html#ref-R-devtools">Wickham, Hester, et al. 2022</a>)</span> or <code>R CMD check</code>, the Vignettes are going to be built, and the process will fail if at least one of the Vignettes fails to render.
+That way, you can use the documentation of the back-end as an extra tool for doing unit testing!</p>
+<p>One radical approach to the “Rmd first” philosophy is to write <strong>everything</strong> in an Rmd from the very beginning of your project: write the function code, their roxygen tags, their tests, etc., then move everything to the correct spot in the package infrastructure once you are happy with everything.
+And of course, when you need to add another feature to your app, open a new markdown and start the process of development and documentation again.</p>
+
+</div>
+</div>
+</div>
+
+
+
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></div>
+<div class="next"><a href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#building-ispum-app"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li>
+<a class="nav-link" href="#prototyping-is-crucial"><span class="header-section-number">9.1</span> Prototyping is crucial</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#prototype-then-polish"><span class="header-section-number">9.1.1</span> Prototype, then polish</a></li>
+<li><a class="nav-link" href="#the-ui-first-approach"><span class="header-section-number">9.1.2</span> The “UI first” approach</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#prototyping-shiny"><span class="header-section-number">9.2</span> Prototyping {shiny}</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#fast-ui-prototyping-with-shinipsum"><span class="header-section-number">9.2.1</span> Fast UI prototyping with {shinipsum}</a></li>
+<li><a class="nav-link" href="#using-fakir-for-fake-data-generation"><span class="header-section-number">9.2.2</span> Using {fakir} for fake data generation</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#proto-rmdfirst"><span class="header-section-number">9.3</span> Building with RMarkdown</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#define-the-content-of-the-application"><span class="header-section-number">9.3.1</span> Define the content of the application</a></li>
+<li><a class="nav-link" href="#using-the-rmd-files-as-a-laboratory-notebook"><span class="header-section-number">9.3.2</span> Using the Rmd files as a laboratory notebook</a></li>
+<li><a class="nav-link" href="#rmd-vignettes-and-documentation-first"><span class="header-section-number">9.3.3</span> Rmd, Vignettes, and documentation first</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/09-prototyping.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/09-prototyping.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

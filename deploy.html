@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 13 Deploy Your Application | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="Your deploys should be as boring, straightforward, and stress-free as possible. How to Deploy Software - Zach Holman (https://zachholman.com/posts/deploying-software) Once your app is built, you...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 13 Deploy Your Application | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="Your deploys should be as boring, straightforward, and stress-free as possible. How to Deploy Software - Zach Holman (https://zachholman.com/posts/deploying-software) Once your app is built, you...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 13 Deploy Your Application | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="Your deploys should be as boring, straightforward, and stress-free as possible. How to Deploy Software - Zach Holman (https://zachholman.com/posts/deploying-software) Once your app is built, you...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="active" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="deploy" class="section level1" number="13">
+<h1>
+<span class="header-section-number">13</span> Deploy Your Application<a class="anchor" aria-label="anchor" href="#deploy"><i class="fas fa-link"></i></a>
+</h1>
+<blockquote>
+<p>Your deploys should be as boring, straightforward, and stress-free as possible.</p>
+<p><em>How to Deploy Software - Zach Holman</em> (<a href="https://zachholman.com/posts/deploying-software" class="uri">https://zachholman.com/posts/deploying-software</a>)</p>
+</blockquote>
+<p>Once your app is built, you are ready to deploy it!
+In other words, your software is now ready to be used by other users.
+There are two main ways to share your application and make it available to others: by creating a package and making it installable, or by sending it to a remote server.
+We will see in this part how you can do that using <a href="https://github.com/ThinkR-open/golem">golem</a> <span class="citation">(<a href="references.html#ref-R-golem">Fay, Guyader, Rochette, et al. 2023</a>)</span>.</p>
+<div id="before-deployment-checklist" class="section level2" number="13.1">
+<h2>
+<span class="header-section-number">13.1</span> Before deployment checklist<a class="anchor" aria-label="anchor" href="#before-deployment-checklist"><i class="fas fa-link"></i></a>
+</h2>
+<p>Here is a quick checklist of things to think about once your application is ready, and before sending it to production:</p>
+<ul class="task-list">
+<li><p><label><input type="checkbox"><code><a href="https://devtools.r-lib.org/reference/check.html">devtools::check()</a></code>, run from the command line, returns 0 errors, 0 warnings, and 0 notes.</label></p></li>
+<li><p><label><input type="checkbox">The current version number is valid, i.e. if the current app is an update, the version number has been bumped.</label></p></li>
+<li><p><label><input type="checkbox">Everything is fully documented.</label></p></li>
+<li><p><label><input type="checkbox">Test coverage is good, i.e. you cover a sufficient amount of the codebase, and these tests cover the core/strategic algorithms</label></p></li>
+<li><p><label><input type="checkbox">Everyone in the project knows the person to call if something goes wrong.</label></p></li>
+<li><p><label><input type="checkbox">The following things are clear to everyone involved in the project: the debugging process, how to communicate bugs to the developer team, and how long it will take to get changes implemented.</label></p></li>
+<li><p><label><input type="checkbox">(If relevant) The server it is deployed on has all the necessary software installed (Docker, Connect, <code>Shiny Server</code>, etc.) to make the application run.</label></p></li>
+<li><p><label><input type="checkbox">The server has all the system requirements needed (i.e. the system libraries), and if not, they are installed with the application (if it’s dockerized).</label></p></li>
+<li><p><label><input type="checkbox">The application, if deployed on a server, will be deployed on a port which will be accessible by the users.</label></p></li>
+<li><p><label><input type="checkbox">(If relevant) The environment variables from the production server are managed inside the application.</label></p></li>
+<li><p><label><input type="checkbox">(If relevant) The app is launched on the correct port, or at least this port can be configured via an environment variable.</label></p></li>
+<li><p><label><input type="checkbox">(If relevant) The server where the app is deployed has access to the data sources (database, API, etc.).</label></p></li>
+<li><p><label><input type="checkbox">If the app records data, there are backups for these data.</label></p></li>
+</ul>
+</div>
+<div id="sharing-your-app-as-a-package" class="section level2" number="13.2">
+<h2>
+<span class="header-section-number">13.2</span> Sharing your app as a package<a class="anchor" aria-label="anchor" href="#sharing-your-app-as-a-package"><i class="fas fa-link"></i></a>
+</h2>
+<div id="install-on-your-machine" class="section level3" number="13.2.1">
+<h3>
+<span class="header-section-number">13.2.1</span> Install on your machine<a class="anchor" aria-label="anchor" href="#install-on-your-machine"><i class="fas fa-link"></i></a>
+</h3>
+<p>A <a href="https://shiny.rstudio.com/">shiny</a> application built with <a href="https://github.com/ThinkR-open/golem">golem</a> <span class="citation">(<a href="references.html#ref-R-golem">Fay, Guyader, Rochette, et al. 2023</a>)</span> is <strong>by definition</strong> an R package.
+This <a href="https://shiny.rstudio.com/">shiny</a> app as a package is also helpful when it comes to deploying your application: packages are designed to be shareable pieces of R code.</p>
+<p>Before sending it to a remote server or sharing it with the world, <strong>the first step is testing if the package can be installed on your own computer</strong>.
+To do that, when you are in the project corresponding to the golem you built, you can call <code><a href="https://remotes.r-lib.org/reference/install_local.html">remotes::install_local()</a></code> to install the application on your computer.
+Of course, if you are somewhere else on your machine, you can call <code>remotes::install_local("path/to/app")</code>.
+If you are using the RStudio IDE, you can also click on the <code>Build</code> tab, then click on the <code>Install and Restart</code> button.</p>
+<p>This should restart your R session, and call <code><a href="https://rdrr.io/r/base/library.html">library(yourpackagename)</a></code>.
+Then, try the <code>run_app()</code> function to check that the app can be launched.</p>
+</div>
+<div id="share-as-a-built-package" class="section level3" number="13.2.2">
+<h3>
+<span class="header-section-number">13.2.2</span> Share as a built package<a class="anchor" aria-label="anchor" href="#share-as-a-built-package"><i class="fas fa-link"></i></a>
+</h3>
+<div id="a.-local-build" class="section level4 unnumbered">
+<h4>A. Local build<a class="anchor" aria-label="anchor" href="#a.-local-build"><i class="fas fa-link"></i></a>
+</h4>
+<p>Building an app as a package also means that this app can be bundled into an archive, and then shared, either as is or using a package repository like the CRAN.</p>
+<p>To do that, you first need an bundled version of your app, which can be created using the <code>build()</code> function from <a href="https://github.com/r-lib/pkgbuild">pkgbuild</a> <span class="citation">(<a href="references.html#ref-R-pkgbuild">Wickham, Hester, and Csárdi 2022</a>)</span> in the same working directory as your application.
+Calling this function will create a .tar.gz file that is called <code>mygolem_0.0.1.tar.gz</code> (of course with the name of your package).
+Once you have this <code>tar.gz</code>, you can send it to your favorite package repository.</p>
+<p>You can also share the file as is with others.
+If you do so, they will have to install the app with <code>remotes::install_local("path/to/tar.gz")</code>, that will take care of doing a full installation of the app, including installing the required dependencies.
+Then, they can do <code><a href="https://rdrr.io/r/base/library.html">library(yourpackagename)</a></code> and <code>run_app()</code> on their machine.</p>
+</div>
+<div id="b.-send-to-a-package-repository" class="section level4 unnumbered">
+<h4>B. Send to a package repository<a class="anchor" aria-label="anchor" href="#b.-send-to-a-package-repository"><i class="fas fa-link"></i></a>
+</h4>
+<p>The upside of building the application <a href="https://github.com/ThinkR-open/golem">golem</a>, i.e. as a package, is that you can share your application on a remote package manager, the more widely used, for example, on the CRAN like <code>{dccvalidator}</code> <span class="citation">(<a href="#ref-R-dccvalidator"><strong>R-dccvalidator?</strong></a>)</span>, or on BioConductor like <code>{spatialLIBD}</code> <span class="citation">(<a href="references.html#ref-R-spatialLIBD">Collado-Torres, Maynard, and Jaffe 2020</a>)</span>.
+But any other package manager will work: for example, if the company uses RStudio Package Manager, your application can be installed here in the same way as any other package.
+If your application is open source, the package structure also allows you to install from GitHub, by using the <code><a href="https://remotes.r-lib.org/reference/install_github.html">remotes::install_github()</a></code> function.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;This is also true for other version control systems.&lt;/p&gt;"><sup>52</sup></a>
+For example, this is what you can do with <a href="https://github.com/colinfay/hexmake">hexmake</a> or <code>{tidytuesday}</code>: as they are open-source packages, they can be installed from GitHub.
+Then, once your application is installed as a package on the users’ machines, they can do <code><a href="https://rdrr.io/r/base/library.html">library(yourpackagename)</a></code> and <code>run_app()</code>.</p>
+<p>The advantage of this solution is that R users are familiar with package installation, so it makes using your application easier for them.
+Also, and we will see it in the next section, making your application available as a standard R package makes it easier to deploy it: for example, if your RStudio Connect is coupled with your RStudio Package Manager, the deployment file just has to contain one line launching the application.</p>
+<p>Note that releasing to CRAN or BioConductor requires extra effort: you have to comply with a series of rules.
+But good news: as you have been following the best practices from this book, you should not have to put in that much extra effort!</p>
+<p>Know more about releasing on CRAN:</p>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/submission_checklist.html">Checklist for CRAN submissions</a></li>
+<li><a href="https://cran.r-project.org/web/packages/policies.html">CRAN Repository Policy</a></li>
+<li><a href="https://r-pkgs.org/release.html">R packages - Chapter 18, Releasing a package</a></li>
+<li><a href="https://kbroman.org/pkg_primer/pages/cran.html">Getting your R package on CRAN</a></li>
+<li><a href="https://github.com/ThinkR-open/prepare-for-cran">prepare-for-cran - A collaborative list of things to know before submitting to CRAN</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="deploying-apps-with-golem" class="section level2" number="13.3">
+<h2>
+<span class="header-section-number">13.3</span> Deploying apps with <code>{golem}</code><a class="anchor" aria-label="anchor" href="#deploying-apps-with-golem"><i class="fas fa-link"></i></a>
+</h2>
+<p>The other way to make your application available to others is by sending it to a remote server that can serve <a href="https://shiny.rstudio.com/">shiny</a> applications.
+In other words, instead of having to install the application on their machines, <strong>they can crack open a web browser and navigate to the URL where the application is deployed</strong>.
+Deploying to a server is the solution of choice when you want to make your application available to a wide public: on a server, visitors do not have to have R installed on their computer, they do not have to install a package or launch it; they can just browse the application like any other web application.
+This solution is also a common choice in companies that have strict security requirements: the IT team might not be willing to let everyone install software on their machine, and sharing an application on a server allows them more control over who can access the application.
+For example, deploying on a server allows you to use a proxy, and to filter by IP: then, only a subset of people can have access to the application.</p>
+<p>When using <a href="https://github.com/ThinkR-open/golem">golem</a>, you can open the <code>dev/03_deploy.R</code> and find the functions for server deployment.
+At the time of writing this book, there are two main ways to deploy a shiny app on a server:</p>
+<ul>
+<li>RStudio’s solutions</li>
+<li>A Docker-based solution</li>
+</ul>
+<div id="rstudio-environments" class="section level3" number="13.3.1">
+<h3>
+<span class="header-section-number">13.3.1</span> RStudio environments<a class="anchor" aria-label="anchor" href="#rstudio-environments"><i class="fas fa-link"></i></a>
+</h3>
+<p>RStudio proposes three services to deploy <a href="https://shiny.rstudio.com/">shiny</a> application:</p>
+<ul>
+<li><p><code>shinyapps.io</code>, an on-premises solution, can serve <a href="https://shiny.rstudio.com/">shiny</a> application (freemium).</p></li>
+<li><p><code>Shiny Server</code> is a software you have to install on your own server, and can be used to deploy multiple applications (you can find either an open source or a professional edition).</p></li>
+<li><p><code>RStudio Connect</code> is a server-based solution that can deploy <a href="https://shiny.rstudio.com/">shiny</a> applications and <code>Markdown</code> documents (and other kinds of content), and serves them as ordinary websites.</p></li>
+</ul>
+<p>Each of these platforms has its own function to create an <code>app.R</code> file that is to be used as a launch script of each platform.</p>
+<ul>
+<li><p><code><a href="https://rdrr.io/pkg/golem/man/rstudio_deploy.html">golem::add_rstudioconnect_file()</a></code></p></li>
+<li><p><code><a href="https://rdrr.io/pkg/golem/man/rstudio_deploy.html">golem::add_shinyappsio_file()</a></code></p></li>
+<li><p><code><a href="https://rdrr.io/pkg/golem/man/rstudio_deploy.html">golem::add_shinyserver_file()</a></code></p></li>
+</ul>
+<p>These <code>app.R</code> files call a <code><a href="https://pkgload.r-lib.org/reference/load_all.html">pkgload::load_all()</a></code> function, that will mimic the launch of your package, and then call the <code>run_app()</code> function from your packaged app.
+Note that if you need to configure the way your app is launched on these platforms (for example, if you need to pass arguments to the <code>run_app()</code> function), you will have to edit this file.</p>
+<p>Note that when using these functions, you will be able to use the “One click deploy” for these platforms: on the top right of these <code>app.R</code>, use the Blue Button to deploy to a server.</p>
+<p>Another way to deploy your <a href="https://github.com/ThinkR-open/golem">golem</a>-based app to <a href="https://shiny.rstudio.com/">shiny</a> server and to Connect is to link these two software to a local repository (for example, an RStudio Package Manager), and then to only use <code>mypackage::run_app()</code> to the <code>app.R</code>.</p>
+</div>
+<div id="docker-1" class="section level3" number="13.3.2">
+<h3>
+<span class="header-section-number">13.3.2</span> Docker<a class="anchor" aria-label="anchor" href="#docker-1"><i class="fas fa-link"></i></a>
+</h3>
+<p>Docker is an open source software used to build and deploy applications in containers.
+Docker has become a core solution in the DevOps world and a lot of server solutions are based on it.
+See Part 5, “Strengthen”, for a more complete introduction to Docker.</p>
+<p>You will find the function for creating a <code>Dockerfile</code> for your <a href="https://github.com/ThinkR-open/golem">golem</a> app inside the <code>03_deploy.R</code> file, which contains a series of 3 functions:</p>
+<ul>
+<li><code><a href="https://rdrr.io/pkg/golem/man/dockerfiles.html">golem::add_dockerfile()</a></code></li>
+<li><code><a href="https://rdrr.io/pkg/golem/man/dockerfiles.html">golem::add_dockerfile_shinyproxy()</a></code></li>
+<li><code><a href="https://rdrr.io/pkg/golem/man/dockerfiles.html">golem::add_dockerfile_heroku()</a></code></li>
+</ul>
+<p>The first function creates a “generic” <code>Dockerfile</code>, in the sense that it is not specific to any platform, and would work out of the box for your local machine.
+The second one is meant for <a href="https://www.shinyproxy.io/"><code>{shiny}</code>Proxy</a>, an open source solution for deploying containerized <a href="https://shiny.rstudio.com/">shiny</a> applications, and the third is for <a href="https://www.heroku.com/">Heroku</a>, an online service that can serve containerized applications (not specific to <a href="https://shiny.rstudio.com/">shiny</a>).</p>
+<p>Other platforms can run Docker containers, notably AWS and Google Cloud Engine.
+At the time of writing these lines, <a href="https://github.com/ThinkR-open/golem">golem</a> does not provide support for these environments, but that is on the to-do list!</p>
+<p>Note that the <code>Dockerfile</code> creation in <a href="https://github.com/ThinkR-open/golem">golem</a> tries to replicate your local environment as precisely as possible, notably by matching your R version, and the version of the packages you have installed on your machine.
+System requirements are also added when they are found on <a href="https://sysreqs.r-hub.io/">the sysreqs service from r-hub</a>.
+Otherwise you might have to add them manually.</p>
+
+</div>
+</div>
+</div>
+
+
+
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="version-control.html"><span class="header-section-number">12</span> Version Control</a></div>
+<div class="next"><a href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#deploy"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li><a class="nav-link" href="#before-deployment-checklist"><span class="header-section-number">13.1</span> Before deployment checklist</a></li>
+<li>
+<a class="nav-link" href="#sharing-your-app-as-a-package"><span class="header-section-number">13.2</span> Sharing your app as a package</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#install-on-your-machine"><span class="header-section-number">13.2.1</span> Install on your machine</a></li>
+<li><a class="nav-link" href="#share-as-a-built-package"><span class="header-section-number">13.2.2</span> Share as a built package</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#deploying-apps-with-golem"><span class="header-section-number">13.3</span> Deploying apps with {golem}</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#rstudio-environments"><span class="header-section-number">13.3.1</span> RStudio environments</a></li>
+<li><a class="nav-link" href="#docker-1"><span class="header-section-number">13.3.2</span> Docker</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/13-deploy.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/13-deploy.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 2 Planning Ahead | Engineering Production-Grade Shiny Apps</title>
+<meta name="author" content="Colin Fay">
+<meta name="author" content="Sébastien Rochette">
+<meta name="author" content="Vincent Guyader">
+<meta name="author" content="Cervan Girard">
+<meta name="description" content="2.1 Working with a “long-term” mindset  Rome ne fut pas faite toute en un jour. French proverb  2.1.1 Prepare for success Whatever your ambitions for your {shiny} application, you should take time...">
+<meta name="generator" content="bookdown 0.33 with bs4_book()">
+<meta property="og:title" content="Chapter 2 Planning Ahead | Engineering Production-Grade Shiny Apps">
+<meta property="og:type" content="book">
+<meta property="og:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<meta property="og:description" content="2.1 Working with a “long-term” mindset  Rome ne fut pas faite toute en un jour. French proverb  2.1.1 Prepare for success Whatever your ambitions for your {shiny} application, you should take time...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 2 Planning Ahead | Engineering Production-Grade Shiny Apps">
+<meta name="twitter:description" content="2.1 Working with a “long-term” mindset  Rome ne fut pas faite toute en un jour. French proverb  2.1.1 Prepare for success Whatever your ambitions for your {shiny} application, you should take time...">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/ThinkR-open/engineering-shiny-book/master/img/engineering-shiny.jpg">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap/bootstrap.bundle.min.js"></script><script src="libs/bs3compat/transition.js"></script><script src="libs/bs3compat/tabs.js"></script><script src="libs/bs3compat/bs3compat.js"></script><link href="libs/bs4_book/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book/bs4_book.js"></script><!-- Global site tag (gtag.js) - Google Analytics --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-149994171-1"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-149994171-1');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><style type="text/css">
+    
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  </style>
+<style type="text/css">
+    /* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+          margin-bottom: 0em;
+        }
+    .hanging div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }
+  </style>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/thinkr.css">
+<link rel="stylesheet" href="css/style_gitbook.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Engineering Production-Grade Shiny Apps</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Introduction</a></li>
+<li><a class="" href="foreword.html">Foreword</a></li>
+<li><a class="" href="application-presentation.html">Application presentation</a></li>
+<li class="book-part">Building Successful {shiny} Apps</li>
+<li><a class="" href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></li>
+<li><a class="active" href="planning-ahead.html"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li><a class="" href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></li>
+<li><a class="" href="golem.html"><span class="header-section-number">4</span> Introduction to {golem}</a></li>
+<li><a class="" href="workflow.html"><span class="header-section-number">5</span> The Workflow</a></li>
+<li class="book-part">Step 1: Design</li>
+<li><a class="" href="ux-matters.html"><span class="header-section-number">6</span> UX Matters</a></li>
+<li><a class="" href="dont-rush-into-coding.html"><span class="header-section-number">7</span> Don’t Rush into Coding</a></li>
+<li class="book-part">Step 2: Prototype</li>
+<li><a class="" href="setting-up-for-success.html"><span class="header-section-number">8</span> Setting up for Success with {golem}</a></li>
+<li><a class="" href="building-ispum-app.html"><span class="header-section-number">9</span> Building an “ipsum-app”</a></li>
+<li class="book-part">Step 3: Build</li>
+<li><a class="" href="build-app-golem.html"><span class="header-section-number">10</span> Building the App with {golem}</a></li>
+<li class="book-part">Step 4: Strengthen</li>
+<li><a class="" href="build-yourself-safety-net.html"><span class="header-section-number">11</span> Build Yourself a Safety Net</a></li>
+<li><a class="" href="version-control.html"><span class="header-section-number">12</span> Version Control</a></li>
+<li class="book-part">Step 5: Deploy</li>
+<li><a class="" href="deploy.html"><span class="header-section-number">13</span> Deploy Your Application</a></li>
+<li class="book-part">Optimizing</li>
+<li><a class="" href="need-for-optimization.html"><span class="header-section-number">14</span> The Need for Optimization</a></li>
+<li><a class="" href="common-app-caveats.html"><span class="header-section-number">15</span> Common Application Caveats</a></li>
+<li><a class="" href="optimizing-shiny-code.html"><span class="header-section-number">16</span> Optimizing {shiny} Code</a></li>
+<li><a class="" href="using-javascript.html"><span class="header-section-number">17</span> Using JavaScript</a></li>
+<li><a class="" href="css.html"><span class="header-section-number">18</span> A Gentle Introduction to CSS</a></li>
+<li class="book-part">Appendix</li>
+<li><a class="" href="appendix-a---use-case-building-an-app-from-start-to-finish.html">Appendix A - Use Case: Building an App from Start to Finish</a></li>
+<li><a class="" href="appendix-b---session-info.html">Appendix B - Session Info</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/ThinkR-open/engineering-shiny-book">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="planning-ahead" class="section level1" number="2">
+<h1>
+<span class="header-section-number">2</span> Planning Ahead<a class="anchor" aria-label="anchor" href="#planning-ahead"><i class="fas fa-link"></i></a>
+</h1>
+<div id="working-with-a-long-term-mindset" class="section level2" number="2.1">
+<h2>
+<span class="header-section-number">2.1</span> Working with a “long-term” mindset<a class="anchor" aria-label="anchor" href="#working-with-a-long-term-mindset"><i class="fas fa-link"></i></a>
+</h2>
+<blockquote>
+<p>Rome ne fut pas faite toute en un jour.</p>
+<p><em>French proverb</em></p>
+</blockquote>
+<div id="prepare-for-success" class="section level3" number="2.1.1">
+<h3>
+<span class="header-section-number">2.1.1</span> Prepare for success<a class="anchor" aria-label="anchor" href="#prepare-for-success"><i class="fas fa-link"></i></a>
+</h3>
+<p>Whatever your ambitions for your <a href="https://shiny.rstudio.com/">shiny</a> application, you should take time today to set robust foundations that will save a lot of time in the future.</p>
+<p>A common thing you will hear about <a href="https://shiny.rstudio.com/">shiny</a> is that it is a good prototyping tool.
+This cannot be denied.
+Building a Proof of Concept (PoC) for an app is relatively straightforward if you compare to what is needed to build applications in other languages.
+With <a href="https://shiny.rstudio.com/">shiny</a>, you can build an “it works on my machine” web application in a couple of hours, and show it to your team, your boss, your investors.
+Thanks to the way <a href="https://shiny.rstudio.com/">shiny</a> was designed, you do not have to care about websockets, ports, HTML (HyperText Markup Language), JavaScript libraries, and all the things that are elegantly bundled into <a href="https://shiny.rstudio.com/">shiny</a>.</p>
+<p>Hence, you can have a quick, hacky application that will work on your machine, and very rapidly.
+But that is not the way you should start.
+Indeed, starting with hacky foundations will lead to two possibilities:</p>
+<ul>
+<li>You will have to <strong>rewrite everything from scratch</strong> to have a robust application for production.</li>
+<li>If you do not want to rewrite all the code, you will <strong>get stuck with a legacy codebase</strong> for the application, built on top of hacky functions, and sent to production using hacky solutions.</li>
+</ul>
+<p>Either way, that is a <strong>heavy technical debt</strong>.</p>
+<p><a href="https://shiny.rstudio.com/">shiny</a> is a good tool for prototyping, but there is no harm in starting your application on solid ground, even for a prototype: <strong>the sooner you start with a robust framework the better, and the longer you wait the harder it gets to convert your application to a production-ready one</strong>.
+The larger the codebase, the harder it is to untangle everything and make it work.</p>
+<p>In this book, we will present a framework called <a href="https://github.com/ThinkR-open/golem">golem</a>, which is a toolbox for building production-grade <a href="https://shiny.rstudio.com/">shiny</a> applications.
+Even if <a href="https://github.com/ThinkR-open/golem">golem</a> is focused on production, there is no reason not to use it for your proof of concepts: starting a new <a href="https://github.com/ThinkR-open/golem">golem</a> project is relatively straightforward, and even if you do not use the advanced features, you can use it for very small apps.
+The benefit of starting straight inside a <a href="https://github.com/ThinkR-open/golem">golem</a> application really outweighs the cost.
+We hear a lot the question “When should I switch to <a href="https://github.com/ThinkR-open/golem">golem</a>?” The answer is simple: do not switch to <a href="https://github.com/ThinkR-open/golem">golem</a>, start with it.
+That way, you are getting ready for complexity, and if, one day, you need to turn this small app into a production app, the foundations are there.</p>
+</div>
+<div id="develop-with-the-kiss-principle" class="section level3" number="2.1.2">
+<h3>
+<span class="header-section-number">2.1.2</span> Develop with the KISS principle<a class="anchor" aria-label="anchor" href="#develop-with-the-kiss-principle"><i class="fas fa-link"></i></a>
+</h3>
+<blockquote>
+<p>The KISS principle states that most systems work best if they are kept simple rather than made complicated; therefore, simplicity should be a key goal in design, and unnecessary complexity should be avoided.<br></p>
+<p><em>KISS principle, Wikipedia article</em> (<a href="https://en.wikipedia.org/wiki/KISS_principle" class="uri">https://en.wikipedia.org/wiki/KISS_principle</a>)</p>
+</blockquote>
+<p>The KISS principle, as “Keep It Simple, Stupid”, should drive the implementation of features in the application to allow anyone in the future, including original developers, to take over on the development.</p>
+<p>The story behind this principle is supposed to be that Kelly Johnson, lead engineer at the Lockheed Skunk Works, gave his workers a set of very common tools and said that every airplane should be repairable with these tools, and these tools only, so that repairing an aircraft should be possible for any average engineer.</p>
+<p>This should be a principle to keep in mind when building applications.
+Indeed, large-scale <a href="https://shiny.rstudio.com/">shiny</a> projects can lead to many people working on the codebase, for a long period of time.
+<strong>A large team means a variety of skills</strong>, with some common ground in <a href="https://shiny.rstudio.com/">shiny</a> development, but potentially various levels when it comes to R, web development, or production engineering.
+When choosing how and what to implement, <strong>try to make a rule to go for the simplest solution</strong>,<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Which might not be the most “elegant” solution, but production code requires pragmatism.&lt;/p&gt;"><sup>16</sup></a> <em>i.e.</em> the one that any common <a href="https://shiny.rstudio.com/">shiny</a> developer would be able to understand and maintain.
+If you go for an exotic solution or a complex technology, be sure that you are doing it for a good reason: unknown or hard-to-grasp technology reduces the chance of finding someone that will be able to maintain that piece of code in the future, and reduce the smoothness of collaboration, as “<em>Code you can easily comprehend elevates absolutely everyone on your team, no matter their tenure or experience level</em>” <span class="citation">(<a href="references.html#ref-lemaire2020">Lemaire 2020</a>)</span>.</p>
+</div>
+</div>
+<div id="working-as-a-team-tools-and-structure" class="section level2" number="2.2">
+<h2>
+<span class="header-section-number">2.2</span> Working as a team: Tools and structure<a class="anchor" aria-label="anchor" href="#working-as-a-team-tools-and-structure"><i class="fas fa-link"></i></a>
+</h2>
+<p>Working as a team, whatever the coding project, requires adequate tools, discipline and organization.
+Complex <a href="https://shiny.rstudio.com/">shiny</a> apps usually imply that several people will work on the application.
+For example, at <a href="//rtask.thinkr.fr">ThinkR</a>, 3 to 4 people usually work in parallel on the same application, but there might be more people involved on larger projects.
+<strong>The choice of tools and how the team is structured is crucial for a successful application</strong>.</p>
+<div id="from-the-tools-point-of-view" class="section level3" number="2.2.1">
+<h3>
+<span class="header-section-number">2.2.1</span> From the tools point of view<a class="anchor" aria-label="anchor" href="#from-the-tools-point-of-view"><i class="fas fa-link"></i></a>
+</h3>
+<div id="a.-version-control-and-test-all-things" class="section level4 unnumbered">
+<h4>A. Version control and test all things<a class="anchor" aria-label="anchor" href="#a.-version-control-and-test-all-things"><i class="fas fa-link"></i></a>
+</h4>
+<p>To get informed about a code break during development, you will need to write tests for your app, and use continuous integration (CI) so that you are sure this is automatically detected.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Relying on automatic tooling for monitoring the codebase is way safer than relying on developers to do manual checks every time they commit code.&lt;/p&gt;"><sup>17</sup></a>
+When you are working on a complex application, chances are that you will be working on it for a significant period of time, meaning that you will write code, modify it, use it, go back to it after a few weeks, change some other things, and probably break things.
+<strong>Breaking things is a natural process of software engineering, notably when working on a piece of code during a long period</strong>. Remember the last chapter where we explained that complex applications are too large to be understood fully?
+Adding code that breaks the codebase will happen with complex apps, so the sooner you take measures to solve these changes, the better.</p>
+<p>As you cannot prevent code from breaking, you should at least get the tooling to:</p>
+<ul>
+<li>
+<strong>Be informed that the codebase is broken</strong>: this is the role of tests combined with CI.</li>
+<li>
+<strong>Be able to identify changes between versions, and potentially, get back in time to a previous codebase</strong>: this is the role of version control.</li>
+</ul>
+<p>We will go deeper into testing and version control in <a href="build-yourself-safety-net.html#build-yourself-safety-net">chapter 14</a>.</p>
+</div>
+<div id="b.-small-is-beautiful" class="section level4 unnumbered">
+<h4>B. Small is beautiful<a class="anchor" aria-label="anchor" href="#b.-small-is-beautiful"><i class="fas fa-link"></i></a>
+</h4>
+<p>Building an application with multiple small and independent pieces will lighten your development process and your mental load.
+The previous chapter introduced the notion of complexity in size, where the app grows so large that it is very hard to have a good grasp of it.
+<strong>A large codebase implies that the safe way to work is to split the app into pieces</strong>.</p>
+<p>Splitting a <a href="https://shiny.rstudio.com/">shiny</a> project is made possible by following two methods:</p>
+<ul>
+<li><p><strong>Extract your core “non-reactive” functions, which we will also call the “business logic”, and include them in external files</strong>, so that you can work on these outside of the app.
+Working on independent functions to implement features will prevent you from relaunching the whole application every time you need to add something new.</p></li>
+<li><p><strong>Split your app into <a href="https://shiny.rstudio.com/">shiny</a> modules</strong>, so that your app can be though of as a tree, making it possible for every developer to concentrate on one node, and only one, instead of having to think about the global infrastructure when implementing features.</p></li>
+</ul>
+<p>Figure <a href="planning-ahead.html#fig:02-planning-ahead-1">2.1</a> is, for example, a representation of a <a href="https://shiny.rstudio.com/">shiny</a> application with modules and sub-modules.
+You will not be able to decipher the text inside the node, but the idea is to give you a sense of how a <a href="https://shiny.rstudio.com/">shiny</a> application with modules can be organized and split into smaller pieces that are all related to each other in a tree form.</p>
+
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:02-planning-ahead-1"></span>
+<img src="img/app_tree.png" alt="Representation of a {shiny} application with its modules and sub-modules." width="100%"><p class="caption">
+FIGURE 2.1: Representation of a <a href="https://shiny.rstudio.com/">shiny</a> application with its modules and sub-modules.
+</p>
+</div>
+<p>We will get back to <a href="https://shiny.rstudio.com/">shiny</a> modules and how to organize your project in the next chapter.</p>
+</div>
+</div>
+<div id="from-the-team-point-of-view" class="section level3" number="2.2.2">
+<h3>
+<span class="header-section-number">2.2.2</span> From the team point of view<a class="anchor" aria-label="anchor" href="#from-the-team-point-of-view"><i class="fas fa-link"></i></a>
+</h3>
+<p>We recommend that you define two kinds of developers: a unique person (or maybe two) to be in charge of supervising the whole project and developers that will work on specific features.
+Note that this is how a project should be organized in a perfect world: in practice, a lot of <a href="https://shiny.rstudio.com/">shiny</a> projects are managed by one developer who is in charge of managing the project, interacting with the client, and building the whole codebase.</p>
+<div id="a.-a-person-in-charge" class="section level4 unnumbered">
+<h4>A. A person in charge<a class="anchor" aria-label="anchor" href="#a.-a-person-in-charge"><i class="fas fa-link"></i></a>
+</h4>
+<p>The person in charge of the development will have <strong>a complete view of the entire project and manage the team so that all developers implement features that fit together</strong>.</p>
+<p>With complex applications, it can be hard to have the complete understanding of what the entire app is doing.
+Most of the time, it is not necessary for all developers to have this complete picture.
+By defining one person in charge, this “manager” will have to get the whole picture: what each part of the software is doing, how to make everything work together, avoid development conflicts, and of course check that, at the end of the day, the results returned by the built application are the correct ones.</p>
+<p>The project manager will be the one that kicks off the project, and writes the first draft of the application.
+If you follow this book’s workflow, this person will first create a <a href="https://github.com/ThinkR-open/golem">golem</a> project, fill in the information, and define the application structure by providing the main modules, and potentially work on the prototyped UI of the app.</p>
+<p>Once the skeleton of the app is created, this person in charge will list all the things that have to be done.
+We strongly suggest that you use <code>Git</code> with a graphical interface (GitLab, GitHub, Bitbucket, etc.) as the graphical interface to help you manage the project.
+These tasks are defined as issues, and will be closed during development.
+These interfaces can also be used to set continuous integration.</p>
+<p>If the team follows a <code>git flow</code> (described in Chapter <a href="version-control.html#version-control">12</a>), the manager will also be in charge of reviewing and accepting the pull/merge requests to the main <code>dev</code> branch if they solve the associated issues.</p>
+<p>Do not worry if this sounds like a foreign language to you, we will get back to this method later in this book (Chapter <a href="version-control.html#version-control">12</a>).</p>
+</div>
+<div id="b.-developers" class="section level4 unnumbered">
+<h4>B. Developers<a class="anchor" aria-label="anchor" href="#b.-developers"><i class="fas fa-link"></i></a>
+</h4>
+<p><strong>Developers will focus on small features</strong>.
+If the person in charge has correctly separated the work between developers of the team, they will be focusing on one or more parts of the application, but do not need to know every single bit of what the application is doing.
+In a perfect world, the application is split in various <a href="https://shiny.rstudio.com/">shiny</a> modules, one module equals one file, and each member of the team will be assigned to the development of one or more modules.</p>
+<p>It is simpler to work in this context where one developer is assigned to one module, although we know that in reality it may be a little more complex, and several members of the team might go back and forth working on a common module.
+But the person in charge will be there to help make all the pieces fit together.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+<hr>
+<footer><a href="https://rtask.thinkr.fr"><img src="img/logo400_129.png" alt="ThinkR Website"></a>
+<!--https://yihui.org/en/2018/09/target-blank/-->
+<script>
+  (function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script></footer><div class="chapter-nav">
+<div class="prev"><a href="successful-shiny-app.html"><span class="header-section-number">1</span> About Successful {shiny} Apps</a></div>
+<div class="next"><a href="structuring-project.html"><span class="header-section-number">3</span> Structuring Your Project</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#planning-ahead"><span class="header-section-number">2</span> Planning Ahead</a></li>
+<li>
+<a class="nav-link" href="#working-with-a-long-term-mindset"><span class="header-section-number">2.1</span> Working with a “long-term” mindset</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#prepare-for-success"><span class="header-section-number">2.1.1</span> Prepare for success</a></li>
+<li><a class="nav-link" href="#develop-with-the-kiss-principle"><span class="header-section-number">2.1.2</span> Develop with the KISS principle</a></li>
+</ul>
+</li>
+<li>
+<a class="nav-link" href="#working-as-a-team-tools-and-structure"><span class="header-section-number">2.2</span> Working as a team: Tools and structure</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#from-the-tools-point-of-view"><span class="header-section-number">2.2.1</span> From the tools point of view</a></li>
+<li><a class="nav-link" href="#from-the-team-point-of-view"><span class="header-section-number">2.2.2</span> From the team point of view</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/ThinkR-open/engineering-shiny-book/blob/master/02-planning-ahead.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/ThinkR-open/engineering-shiny-book/edit/master/02-planning-ahead.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Engineering Production-Grade Shiny Apps</strong>" was written by Colin Fay, Sébastien Rochette, Vincent Guyader, Cervan Girard. It was last built on 2024-03-12.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>
